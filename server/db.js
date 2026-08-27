@@ -1,51 +1,76 @@
-const sqlite3 = require('sqlite3').verbose();
+const initSqlJs = require('sql.js');
+const fs = require('fs');
 const path = require('path');
 
 const DB_PATH = process.env.DB_PATH || path.join(__dirname, 'maktab.db');
 
-const db = new sqlite3.Database(DB_PATH, (err) => {
-  if (err) {
-    console.error('Failed to open database:', err.message);
+let dbInstance = null;
+
+async function getDb() {
+  if (dbInstance) return dbInstance;
+
+  const SQL = await initSqlJs();
+  
+  if (fs.existsSync(DB_PATH)) {
+    const filebuffer = fs.readFileSync(DB_PATH);
+    dbInstance = new SQL.Database(filebuffer);
+    console.log('Loaded existing SQLite database from', DB_PATH);
   } else {
-    console.log('Connected to SQLite database at', DB_PATH);
+    dbInstance = new SQL.Database();
+    console.log('Created new SQLite database in memory, will persist to', DB_PATH);
   }
-});
+  return dbInstance;
+}
 
-// Promisified database helpers
-const query = (sql, params = []) => {
-  return new Promise((resolve, reject) => {
-    db.all(sql, params, (err, rows) => {
-      if (err) reject(err);
-      else resolve(rows);
-    });
-  });
+function saveDb() {
+  if (!dbInstance) return;
+  try {
+    const data = dbInstance.export();
+    const buffer = Buffer.from(data);
+    fs.writeFileSync(DB_PATH, buffer);
+  } catch (err) {
+    console.error('Failed to persist database to disk:', err);
+  }
+}
+
+// Convert params to array format for sql.js
+function formatParams(params) {
+  if (!params) return [];
+  if (Array.isArray(params)) return params;
+  return [params];
+}
+
+const query = async (sql, params = []) => {
+  const db = await getDb();
+  const stmt = db.prepare(sql);
+  stmt.bind(formatParams(params));
+  const results = [];
+  while (stmt.step()) {
+    results.push(stmt.getAsObject());
+  }
+  stmt.free();
+  return results;
 };
 
-const get = (sql, params = []) => {
-  return new Promise((resolve, reject) => {
-    db.get(sql, params, (err, row) => {
-      if (err) reject(err);
-      else resolve(row);
-    });
-  });
+const get = async (sql, params = []) => {
+  const rows = await query(sql, params);
+  return rows[0] || null;
 };
 
-const run = (sql, params = []) => {
-  return new Promise((resolve, reject) => {
-    db.run(sql, params, function (err) {
-      if (err) reject(err);
-      else resolve({ lastID: this.lastID, changes: this.changes });
-    });
-  });
+const run = async (sql, params = []) => {
+  const db = await getDb();
+  db.run(sql, formatParams(params));
+  saveDb();
+  // Get last insert rowid
+  const lastIdRes = db.exec("SELECT last_insert_rowid() AS id");
+  const lastID = lastIdRes.length > 0 && lastIdRes[0].values.length > 0 ? lastIdRes[0].values[0][0] : 0;
+  return { lastID, changes: 1 };
 };
 
-const exec = (sql) => {
-  return new Promise((resolve, reject) => {
-    db.exec(sql, (err) => {
-      if (err) reject(err);
-      else resolve();
-    });
-  });
+const exec = async (sql) => {
+  const db = await getDb();
+  db.exec(sql);
+  saveDb();
 };
 
 async function initSchema() {
@@ -118,17 +143,17 @@ async function initSchema() {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
       email TEXT UNIQUE,
-      role TEXT NOT NULL, -- 'admin' or 'teacher'
+      role TEXT NOT NULL,
       assigned_class_id INTEGER,
       pin TEXT DEFAULT '1234'
     );
   `;
   await exec(schema);
-  console.log('Database schema verified/created successfully.');
+  console.log('Database schema verified/created successfully via pure WASM SQLite.');
 }
 
 module.exports = {
-  db,
+  getDb,
   query,
   get,
   run,
