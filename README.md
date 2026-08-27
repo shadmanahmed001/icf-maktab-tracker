@@ -1,7 +1,9 @@
 # ICF Daily Maktab — Academic Standards & Progress Tracker
 
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/shadmanahmed001/icf-maktab-tracker)
+
 > **Academic Year 2026–2027**  
-> Custom digital tracking and academic pacing platform for the Islamic Center of Fremont (ICF) Daily Maktab, built to replace physical binders with < 30-second daily teacher check-offs and real-time administrator pacing oversight.
+> Custom digital tracking and academic pacing platform for the Islamic Center of Fremont (ICF) Daily Maktab, built to replace physical binders with < 10-second daily teacher check-offs and real-time administrator pacing oversight.
 
 ---
 
