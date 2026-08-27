@@ -175,7 +175,7 @@ function classProgress(classRow, term, today = todayISO()) {
   const teachers = all(
     `SELECT u.id, u.full_name, u.email, ct.role
        FROM class_teachers ct JOIN users u ON u.id = ct.user_id
-      WHERE ct.class_id = ? ORDER BY ct.role ASC`,
+      WHERE ct.class_id = ? ORDER BY CASE ct.role WHEN 'lead' THEN 0 WHEN 'assistant' THEN 1 ELSE 2 END, u.full_name ASC`,
     [classRow.id]
   );
 

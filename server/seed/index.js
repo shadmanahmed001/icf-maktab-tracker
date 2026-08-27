@@ -131,7 +131,9 @@ function seedStaff() {
     const classResult = run(
       `INSERT INTO classes (name, grade, gender_track, academic_year, room)
        VALUES (?, ?, ?, '2026-2027', ?)`,
-      [key, t.grade, t.track, `Room ${t.grade < 4 ? 100 : 200}${t.track === 'boys' ? 1 : 2}${t.grade}`]
+      // Lower grades on the first floor, upper grades on the second; boys odd,
+      // girls even — matching how the rooms are actually numbered at the centre.
+      [key, t.grade, t.track, `Room ${t.grade < 4 ? 1 : 2}${t.grade}${t.track === 'boys' ? 1 : 2}`]
     );
     classIds[key] = classResult.lastID;
 

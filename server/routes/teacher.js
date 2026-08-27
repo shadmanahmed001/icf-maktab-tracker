@@ -129,11 +129,15 @@ router.get('/classes/:id/today', handler((req, res) => {
     class: progress.class,
     progress: {
       completionPercent: progress.completionPercent,
+      progressPercent: progress.progressPercent,
       expectedPercent: progress.expectedPercent,
       pacingStatus: progress.pacingStatus,
       pacingLabel: progress.pacingLabel,
       coveredCount: progress.coveredCount,
       requiredCount: progress.requiredCount,
+      loggedSessions: progress.loggedSessions,
+      expectedSessions: progress.expectedSessions,
+      loggingPercent: progress.loggingPercent,
     },
     suggestedTopic: suggested,
     coverage: progress.coverage,
@@ -230,6 +234,7 @@ router.post('/lesson-logs', handler((req, res) => {
     created: !existing,
     progress: {
       completionPercent: progress.completionPercent,
+      progressPercent: progress.progressPercent,
       expectedPercent: progress.expectedPercent,
       coveredCount: progress.coveredCount,
       requiredCount: progress.requiredCount,

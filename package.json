@@ -41,6 +41,7 @@
     "sql.js": "^1.14.0"
   },
   "devDependencies": {
-    "concurrently": "^10.0.5"
+    "concurrently": "^10.0.5",
+    "playwright": "^1.62.1"
   }
 }

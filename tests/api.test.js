@@ -304,6 +304,40 @@ test('teacher check-off screen suggests the next uncovered standard', async () =
   assert.equal(d.coverage.length, 5, 'five strands per term');
 });
 
+test('the check-off endpoint returns every progress field the screen renders', async () => {
+  const { client, classes } = await teacherClient();
+  const res = await client.get(`/api/teacher/classes/${classes[0].id}/today`);
+  assert.equal(res.status, 200);
+
+  // A missing field here renders as "0%" next to a non-zero count, which is
+  // how this was caught the first time.
+  for (const field of [
+    'completionPercent', 'progressPercent', 'expectedPercent', 'pacingStatus',
+    'pacingLabel', 'coveredCount', 'requiredCount', 'loggedSessions',
+    'expectedSessions', 'loggingPercent',
+  ]) {
+    assert.notEqual(
+      res.body.data.progress[field], undefined,
+      `progress.${field} must be present`
+    );
+  }
+
+  const p = res.body.data.progress;
+  assert.ok(
+    p.coveredCount === 0 || p.progressPercent > 0,
+    'a class with achieved standards must not report 0% progress'
+  );
+});
+
+test('the lead teacher is listed before assistants', async () => {
+  const admin = createClient();
+  await admin.login('imamshadman@icfbayarea.com');
+  const classes = (await admin.get('/api/admin/classes')).body.data;
+  const shared = classes.find((c) => c.teachers.length > 1);
+  assert.ok(shared, 'the seed should include a class with more than one teacher');
+  assert.equal(shared.teachers[0].role, 'lead', 'the lead teacher comes first');
+});
+
 test('logging a lesson updates coverage and re-saving the same day does not double count', async () => {
   const { client, classes } = await teacherClient();
   const classId = classes[0].id;

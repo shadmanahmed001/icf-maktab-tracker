@@ -32,7 +32,7 @@ function myChildren(userId) {
     teachers: child.class_id ? all(
       `SELECT u.id, u.full_name, u.email, ct.role
          FROM class_teachers ct JOIN users u ON u.id = ct.user_id
-        WHERE ct.class_id = ? ORDER BY ct.role ASC`,
+        WHERE ct.class_id = ? ORDER BY CASE ct.role WHEN 'lead' THEN 0 WHEN 'assistant' THEN 1 ELSE 2 END, u.full_name ASC`,
       [child.class_id]
     ) : [],
   }));
@@ -119,7 +119,7 @@ router.get('/children/:id', handler((req, res) => {
     teachers: classRow ? all(
       `SELECT u.id, u.full_name, u.email, ct.role
          FROM class_teachers ct JOIN users u ON u.id = ct.user_id
-        WHERE ct.class_id = ? ORDER BY ct.role ASC`,
+        WHERE ct.class_id = ? ORDER BY CASE ct.role WHEN 'lead' THEN 0 WHEN 'assistant' THEN 1 ELSE 2 END, u.full_name ASC`,
       [classRow.id]
     ) : [],
     lessons: studentLessonHistory(studentId, term, 40),
@@ -174,7 +174,7 @@ router.get('/children/:id/report-card', handler((req, res) => {
     masteryScale: MASTERY_ORDER,
     teachers: card.student.class_id ? all(
       `SELECT u.full_name, ct.role FROM class_teachers ct JOIN users u ON u.id = ct.user_id
-        WHERE ct.class_id = ? ORDER BY ct.role ASC`,
+        WHERE ct.class_id = ? ORDER BY CASE ct.role WHEN 'lead' THEN 0 WHEN 'assistant' THEN 1 ELSE 2 END, u.full_name ASC`,
       [card.student.class_id]
     ) : [],
     generatedAt: new Date().toISOString(),

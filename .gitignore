@@ -15,3 +15,6 @@ server/*.db
 server/*.db.tmp
 server/*.db-journal
 data/
+
+# Test artefacts
+screenshots/
