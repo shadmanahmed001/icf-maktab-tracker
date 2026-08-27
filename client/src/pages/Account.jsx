@@ -8,6 +8,7 @@ import { useAction } from '../lib/hooks';
 import {
   Alert, Button, Card, DataRow, Field, Input, PageHeader, SectionHeading, toast,
 } from '../ui';
+import { ThemeToggle } from '../features/ThemeToggle';
 
 const ROLE_LABEL = { admin: 'Administrator', teacher: 'Teacher', parent: 'Parent / Guardian' };
 
@@ -60,9 +61,15 @@ export default function Account() {
   return (
     <div data-portal={user.role === 'parent' ? 'parent' : user.role} className="min-h-screen">
       <div className="mx-auto max-w-2xl px-4 py-8 sm:px-6">
-        <Button as={Link} to={home} variant="ghost" size="sm" icon={<ArrowLeft size={15} />} className="mb-4">
-          Back to your portal
-        </Button>
+        {/* This page renders outside the portal shell, so it carries its own
+            copy of the switch — otherwise appearance would be unreachable from
+            the one screen a person visits to change their own settings. */}
+        <div className="mb-4 flex items-center justify-between gap-3">
+          <Button as={Link} to={home} variant="ghost" size="sm" icon={<ArrowLeft size={15} />}>
+            Back to your portal
+          </Button>
+          <ThemeToggle />
+        </div>
 
         <PageHeader
           eyebrow="Your account"

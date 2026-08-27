@@ -12,6 +12,7 @@ import { api } from '../lib/api';
 import { HOME_FOR_ROLE, useAuth } from '../lib/auth';
 import { Alert, Button, Field, Input, Spinner } from '../ui';
 import { MaktabMark } from '../layout/AppShell';
+import { ThemeToggle } from '../features/ThemeToggle';
 
 const ROLE_META = {
   admin: { icon: ShieldCheck, label: 'Administration', blurb: 'Pacing across every grade' },
@@ -74,7 +75,12 @@ export default function Login() {
   }, {});
 
   return (
-    <div className="flex min-h-screen flex-col lg:flex-row">
+    <div className="relative flex min-h-screen flex-col lg:flex-row">
+      {/* Reachable before anyone signs in: a tester who finds the dark scheme
+          hard to read should not have to get through the form first. */}
+      <div className="absolute right-3 top-3 z-10">
+        <ThemeToggle />
+      </div>
       {/* Brand panel */}
       <div
         className="motif relative flex shrink-0 flex-col justify-between overflow-hidden px-6 py-8 sm:px-10 lg:w-[46%] lg:py-12"

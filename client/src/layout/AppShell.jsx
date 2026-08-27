@@ -11,6 +11,7 @@ import { Link, NavLink, useLocation } from 'react-router-dom';
 import { LogOut, Menu, X, ChevronDown } from 'lucide-react';
 import { useAuth } from '../lib/auth';
 import { Avatar, Badge, IconButton, cx } from '../ui';
+import { ThemeToggle } from '../features/ThemeToggle';
 import { longDate } from '../lib/format';
 
 function MaktabMark({ size = 30 }) {
@@ -236,6 +237,8 @@ export function AppShell({ portal, nav, bottomNav, title, subtitle, children }) 
           <p className="hidden text-[0.76rem] sm:block" style={{ color: 'var(--text-muted)' }}>
             {longDate(new Date().toISOString().slice(0, 10))}
           </p>
+
+          <ThemeToggle />
         </header>
 
         <main className={cx('px-4 py-5 sm:px-6 sm:py-6', bottomNav?.length && 'pb-24 lg:pb-6')}>

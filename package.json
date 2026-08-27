@@ -1,7 +1,7 @@
 {
   "name": "icf-maktab-tracker",
   "version": "1.0.0",
-  "description": "Islamic Center of Fremont (ICF) Daily Maktab — academic standards tracker with admin, teacher and parent portals",
+  "description": "Islamic Center of Fremont (ICF) Daily Maktab \u2014 academic standards tracker with admin, teacher and parent portals",
   "main": "server/index.js",
   "engines": {
     "node": ">=20.0.0"
@@ -14,14 +14,15 @@
     "reseed": "rm -f server/maktab.db && node server/seed/index.js",
     "test": "node --test tests/api.test.js",
     "test:e2e": "node tests/browser.test.js",
-    "test:all": "npm test && npm run test:e2e",
+    "test:all": "npm test && npm run test:e2e && npm run test:theme",
     "lint": "npm --prefix client run lint",
     "demo": "npm run demo:fixtures && npm run demo:build && npm run demo:page && npm run demo:verify && npm run demo:verify-pages",
     "demo:fixtures": "node scripts/capture-demo-fixtures.js",
     "demo:build": "npm --prefix client run build:demo",
     "demo:page": "node scripts/build-demo-artifact.js",
     "demo:verify": "node scripts/verify-demo.js",
-    "demo:verify-pages": "node scripts/verify-pages.js"
+    "demo:verify-pages": "node scripts/verify-pages.js",
+    "test:theme": "node tests/theme.test.js"
   },
   "keywords": [
     "maktab",
