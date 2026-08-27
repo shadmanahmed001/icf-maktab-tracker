@@ -101,6 +101,35 @@ export default function AdminPacing() {
               {view === 'classes' && <ClassView rows={rows} />}
               {view === 'week' && <WeekView rows={rows} weekOf={data.weekOf} />}
               {view === 'strands' && <StrandView rows={rows} />}
+
+              <Card className="mt-5">
+                <SectionHeading title="Reading this screen" />
+                <dl className="grid gap-3 text-[0.82rem] sm:grid-cols-3">
+                  <div>
+                    <dt className="font-semibold" style={{ color: 'var(--text-strong)' }}>Progress</dt>
+                    <dd style={{ color: 'var(--text-muted)' }}>
+                      Standards achieved in full, with half credit for a standard currently being
+                      taught. Each of the five strands is taught across the whole term, so a class
+                      can be on pace with none finished yet.
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="font-semibold" style={{ color: 'var(--text-strong)' }}>Expected</dt>
+                    <dd style={{ color: 'var(--text-muted)' }}>
+                      How much of the term has elapsed. The gap between progress and expected is
+                      what the status reflects, with tolerance so one missed week is not a flag.
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="font-semibold" style={{ color: 'var(--text-strong)' }}>Check-offs</dt>
+                    <dd style={{ color: 'var(--text-muted)' }}>
+                      Daily records kept against teaching days that have passed. A class teaching
+                      well but not checking off is flagged on this alone — the office cannot see
+                      what was never recorded.
+                    </dd>
+                  </div>
+                </dl>
+              </Card>
             </>
           );
         }}
@@ -120,7 +149,7 @@ function ClassView({ rows }) {
               <Th>Teacher</Th>
               <Th align="center">Pupils</Th>
               <Th align="center">Status</Th>
-              <Th>Coverage vs expected</Th>
+              <Th>Progress vs expected</Th>
               <Th align="center">Standards</Th>
               <Th align="center">Attendance</Th>
               <Th align="right">Last logged</Th>
@@ -147,12 +176,19 @@ function ClassView({ rows }) {
                   </Badge>
                 </Td>
                 <Td className="min-w-48">
-                  <PacingBar value={row.completionPercent} expected={row.expectedPercent} />
+                  <PacingBar value={row.progressPercent} expected={row.expectedPercent} />
                   <p className="num mt-1 text-[0.7rem]" style={{ color: 'var(--text-muted)' }}>
-                    {row.completionPercent}% achieved · {row.expectedPercent}% of term elapsed
+                    {row.progressPercent}% progress · {row.expectedPercent}% of term elapsed
                   </p>
                 </Td>
-                <Td align="center" className="num">{row.covered}/{row.required}</Td>
+                <Td align="center" className="num">
+                  {row.covered}/{row.required}
+                  {row.inProgress > 0 && (
+                    <span className="block text-[0.68rem]" style={{ color: 'var(--text-muted)' }}>
+                      +{row.inProgress} under way
+                    </span>
+                  )}
+                </Td>
                 <Td align="center" className="num">{percent(row.attendance.rate)}</Td>
                 <Td align="right" className="text-[0.76rem]">
                   {row.lastLoggedDate ? mediumDate(row.lastLoggedDate) : '—'}

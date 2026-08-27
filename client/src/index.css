@@ -306,7 +306,14 @@ body {
   }
 }
 
-/* Print: the board digest and report cards are printed on paper regularly. */
+/*
+ * Print. The board digest and report cards go round the table on paper every
+ * week, so this is a real layout rather than a courtesy.
+ */
+@page {
+  margin: 12mm;
+}
+
 @media print {
   :root {
     color-scheme: light;
@@ -322,4 +329,48 @@ body {
   .print\:hidden { display: none !important; }
   .page-break { break-before: page; }
   a[href]::after { content: ""; }
+
+  /*
+   * On screen a wide table scrolls inside its own container. On paper there is
+   * nothing to scroll, so the container must release its content and the table
+   * has to shrink to fit instead of being guillotined at the page edge.
+   */
+  .overflow-x-auto {
+    overflow: visible !important;
+  }
+  table {
+    font-size: 8.5pt !important;
+    width: 100% !important;
+    table-layout: auto;
+  }
+  th, td {
+    padding: 3pt 4pt !important;
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+  }
+  /*
+   * Truncation is a screen affordance; on paper it loses information. Note that
+   * these utilities are applied to table cells as well as to spans, so the
+   * display property is left alone — forcing a <td> to display:block detaches
+   * it from the table and its borders stop lining up.
+   */
+  .truncate, [class*="line-clamp"] {
+    overflow: visible !important;
+    text-overflow: clip !important;
+    white-space: normal !important;
+    -webkit-line-clamp: unset !important;
+  }
+  td, th {
+    display: table-cell !important;
+  }
+
+  /* Keep rows and cards from being split across a page boundary. */
+  tr, li { break-inside: avoid; }
+  thead { display: table-header-group; }
+
+  /* Shadows and heavy rounding waste toner and add nothing on paper. */
+  * {
+    box-shadow: none !important;
+  }
 }

@@ -210,7 +210,7 @@ export default function AdminDashboard() {
                           <Td className="min-w-44">
                             <PacingBar value={row.progressPercent} expected={row.expectedPercent} tone="accent" />
                             <p className="num mt-1 text-[0.7rem]" style={{ color: 'var(--text-muted)' }}>
-                              {row.progressPercent}% covered · {row.expectedPercent}% expected
+                              {row.progressPercent}% progress · {row.expectedPercent}% expected
                             </p>
                           </Td>
                           <Td align="center" className="num">

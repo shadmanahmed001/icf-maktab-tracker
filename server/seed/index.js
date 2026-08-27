@@ -394,6 +394,15 @@ const STRANDS_BY_TERM = {
 function seedStudentProgress(term, classIds, teacherIds, today) {
   const strands = STRANDS_BY_TERM[term.term_number] || STRANDS_BY_TERM[1];
 
+  // A teacher records a judgement on a day they were teaching, so draw the
+  // dates from the term's actual teaching days rather than the calendar.
+  const teachingDays = teachingDaysBetween(
+    term.start_date, today < term.end_date ? today : term.end_date
+  );
+  const recentTeachingDay = () => (teachingDays.length
+    ? teachingDays[Math.max(0, teachingDays.length - 1 - Math.floor(rnd() * Math.min(12, teachingDays.length)))]
+    : today);
+
   for (const [key, classId] of Object.entries(classIds)) {
     const profile = CLASS_PROFILES[key] || { mastery: 'mid' };
     const scale = MASTERY_BY_PROFILE[profile.mastery];
@@ -416,7 +425,7 @@ function seedStudentProgress(term, classIds, teacherIds, today) {
           `INSERT INTO assessments (student_id, term_number, subject, mastery_level, comment, assessed_on, recorded_by)
            VALUES (?, ?, ?, ?, ?, ?, ?)`,
           [s.id, term.term_number, subject, level, assessmentComment(level, subject),
-            addDays(today, -between(1, 12)), teacherId]
+            recentTeachingDay(), teacherId]
         );
       }
 
@@ -431,7 +440,7 @@ function seedStudentProgress(term, classIds, teacherIds, today) {
              (student_id, term_number, item_type, item_label, status, verified_on, recorded_by)
            VALUES (?, ?, ?, ?, ?, ?, ?)`,
           [s.id, term.term_number, itemType, label, status,
-            status === 'mastered' ? addDays(today, -between(1, 15)) : null, teacherId]
+            status === 'mastered' ? recentTeachingDay() : null, teacherId]
         );
       }
     }

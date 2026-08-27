@@ -350,6 +350,10 @@ export function Select({ className, children, ...rest }) {
         backgroundImage:
           "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23667085' stroke-width='2.5' stroke-linecap='round'><path d='m6 9 6 6 6-6'/></svg>\")",
         backgroundPosition: 'right 10px center',
+        // Set alongside the image rather than relying on a utility class:
+        // without it the chevron tiles across the whole control.
+        backgroundRepeat: 'no-repeat',
+        backgroundSize: '16px 16px',
       }}
       {...rest}
     >

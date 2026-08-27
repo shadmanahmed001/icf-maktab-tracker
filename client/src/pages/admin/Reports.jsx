@@ -63,7 +63,11 @@ function BoardDigest() {
 
           <SectionHeading
             title={`${data.term.title} — pacing digest`}
-            description={`Week beginning ${longDate(data.weekOf)}. ${data.term.date_range}.`}
+            description={
+              `Week beginning ${longDate(data.weekOf)}. ${data.term.date_range}. `
+              + `${data.rows[0]?.expectedPercent ?? 0}% of the term has elapsed, so that is the `
+              + 'figure each class is measured against.'
+            }
             action={(
               <span className="flex gap-2 print:hidden">
                 <Badge tone="ok">{data.totals.onTrack} on track</Badge>
@@ -81,8 +85,7 @@ function BoardDigest() {
                   <Th>Teacher</Th>
                   <Th align="center">Pupils</Th>
                   <Th align="center">Standards</Th>
-                  <Th align="center">Coverage</Th>
-                  <Th align="center">Expected</Th>
+                  <Th align="center">Progress</Th>
                   <Th align="center">Check-offs</Th>
                   <Th align="center">Attendance</Th>
                   <Th align="center">Status</Th>
@@ -97,11 +100,19 @@ function BoardDigest() {
                       <Td className="whitespace-nowrap font-semibold" style={{ color: 'var(--text-strong)' }}>
                         {row.className}
                       </Td>
-                      <Td className="max-w-40 truncate text-[0.78rem]">{row.teachers || '—'}</Td>
+                      <Td className="max-w-40 truncate text-[0.78rem] print:max-w-none print:whitespace-normal">
+                        {row.teachers || '—'}
+                      </Td>
                       <Td align="center" className="num">{row.students}</Td>
-                      <Td align="center" className="num">{row.covered}/{row.required}</Td>
-                      <Td align="center" className="num">{row.completionPercent}%</Td>
-                      <Td align="center" className="num" style={{ color: 'var(--text-muted)' }}>{row.expectedPercent}%</Td>
+                      <Td align="center" className="num">
+                        {row.covered}/{row.required}
+                        {row.inProgress > 0 && (
+                          <span className="block text-[0.68rem]" style={{ color: 'var(--text-muted)' }}>
+                            +{row.inProgress} under way
+                          </span>
+                        )}
+                      </Td>
+                      <Td align="center" className="num font-semibold">{row.progressPercent}%</Td>
                       <Td align="center" className="num">{logged}/{row.week.length}</Td>
                       <Td align="center" className="num">{percent(row.attendance.rate)}</Td>
                       <Td align="center">
@@ -109,7 +120,9 @@ function BoardDigest() {
                           {PACING[row.pacingStatus].label}
                         </Badge>
                       </Td>
-                      <Td className="term max-w-64 text-[0.78rem]">{row.nextTopic}</Td>
+                      <Td className="term max-w-64 text-[0.78rem] print:max-w-none print:whitespace-normal">
+                        {row.nextTopic}
+                      </Td>
                     </Tr>
                   );
                 })}
@@ -144,6 +157,11 @@ function BoardDigest() {
                 </li>
                 <li>Attendance across the term stands at {percent(data.totals.attendance.rate)}.</li>
               </ul>
+              <p className="mt-2 text-[0.75rem] leading-relaxed" style={{ color: 'var(--text-muted)' }}>
+                Progress counts standards achieved in full, with half credit for a standard
+                currently being taught — which is why a class can read 0 of 5 achieved and still
+                be on pace in week three. Check-offs count the daily records kept this week.
+              </p>
             </div>
           </div>
 

@@ -70,6 +70,8 @@ async function main() {
     const parentEmail = await findParentEmail(base);
     await runRole(browser, base, 'parent', parentEmail, PARENT_STEPS);
     await runResponsive(browser, base);
+    await runDarkScheme(browser, base);
+    await runPrintLayout(browser, base);
     await runAccessGuards(browser, base);
   } finally {
     await browser.close();
@@ -255,6 +257,114 @@ async function runResponsive(browser, base) {
 
     assertTrue(errors.length === 0, `mobile layout produced no errors${
       errors.length ? ` — ${errors.slice(0, 3).join(' | ')}` : ''}`);
+  } finally {
+    await context.close();
+  }
+}
+
+/**
+ * The dark scheme is a selected palette, not an inversion, so it gets looked at
+ * rather than assumed.
+ */
+async function runDarkScheme(browser, base) {
+  log('\n── Dark scheme ──');
+  const context = await browser.newContext({ viewport: DESKTOP, colorScheme: 'dark' });
+  const page = await context.newPage();
+  const errors = [];
+  page.on('pageerror', (err) => errors.push(err.message));
+
+  try {
+    await signIn(page, base, 'imamshadman@icfbayarea.com');
+
+    for (const [routePath, name] of [
+      ['/admin', 'admin-dashboard'],
+      ['/admin/pacing', 'admin-pacing'],
+    ]) {
+      await page.goto(`${base}${routePath}`, { waitUntil: 'networkidle' });
+      await page.waitForTimeout(400);
+      await page.screenshot({ path: path.join(SHOT_DIR, `dark-${name}.png`), fullPage: true });
+    }
+
+    // A dropdown's chevron is drawn as a background image; if it repeats it
+    // tiles across the control. Only visible on a wide select, so assert it.
+    await page.goto(`${base}/teacher`, { waitUntil: 'networkidle' });
+    await page.waitForTimeout(400);
+    const selectBackgrounds = await page.evaluate(() => Array.from(
+      document.querySelectorAll('select'),
+      (el) => {
+        const style = getComputedStyle(el);
+        return { repeat: style.backgroundRepeat, hasImage: style.backgroundImage !== 'none' };
+      }
+    ));
+    assertTrue(selectBackgrounds.length > 0, 'the multi-class switcher renders a dropdown');
+    assertTrue(
+      selectBackgrounds.every((s) => !s.hasImage || s.repeat === 'no-repeat'),
+      `dropdown chevrons do not tile (${selectBackgrounds.map((s) => s.repeat).join(', ')})`
+    );
+
+    await page.goto(`${base}/admin`, { waitUntil: 'networkidle' });
+    await page.waitForTimeout(400);
+    const ground = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
+    const luma = (ground.match(/\d+/g) || [255, 255, 255]).slice(0, 3)
+      .reduce((sum, v, i) => sum + Number(v) * [0.299, 0.587, 0.114][i], 0) / 255;
+    assertTrue(luma < 0.3, `the dark scheme paints a dark ground (${ground})`);
+
+    // Cards must be distinguishable from the page behind them, or the whole
+    // layout flattens into one dark rectangle.
+    const cardGround = await page.evaluate(() => {
+      const card = document.querySelector('main div[class*="rounded-xl"]');
+      return card ? getComputedStyle(card).backgroundColor : null;
+    });
+    assertTrue(
+      cardGround !== null && cardGround !== ground,
+      `cards are separable from the page ground (${cardGround} vs ${ground})`
+    );
+
+    await page.goto(`${base}/teacher`, { waitUntil: 'networkidle' });
+    await page.waitForTimeout(400);
+    await page.screenshot({ path: path.join(SHOT_DIR, 'dark-teacher-checkoff.png'), fullPage: true });
+
+    assertTrue(errors.length === 0, `dark scheme produced no page errors${
+      errors.length ? ` — ${errors.slice(0, 2).join(' | ')}` : ''}`);
+  } finally {
+    await context.close();
+  }
+}
+
+/**
+ * The board digest and report card are printed and handed round at meetings,
+ * so the print stylesheet has to actually take effect.
+ */
+async function runPrintLayout(browser, base) {
+  log('\n── Print layout ──');
+  const { page, context } = await newPage(browser, DESKTOP);
+
+  try {
+    await signIn(page, base, 'imamshadman@icfbayarea.com');
+    await page.goto(`${base}/admin/reports`, { waitUntil: 'networkidle' });
+    await page.waitForTimeout(500);
+
+    await page.emulateMedia({ media: 'print' });
+    await page.waitForTimeout(250);
+
+    // The masthead is print-only; the navigation is screen-only.
+    const printed = await page.evaluate(() => document.body.innerText);
+    assertTrue(
+      printed.includes('Islamic Center of Fremont'),
+      'the print masthead appears when printing'
+    );
+
+    const sidebarVisible = await page.locator('aside[aria-label="Portal sidebar"]').isVisible();
+    assertTrue(!sidebarVisible, 'the sidebar is hidden when printing');
+
+    const white = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
+    assertTrue(
+      white === 'rgb(255, 255, 255)',
+      `the printed page has a white ground (${white})`
+    );
+
+    await page.screenshot({ path: path.join(SHOT_DIR, 'print-board-digest.png'), fullPage: true });
+    await page.emulateMedia({ media: 'screen' });
   } finally {
     await context.close();
   }

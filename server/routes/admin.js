@@ -669,8 +669,14 @@ router.get('/reports/board-digest', handler((req, res) => {
       students: p.class.student_count,
       covered: p.coveredCount,
       required: p.requiredCount,
+      inProgress: p.inProgressCount,
       completionPercent: p.completionPercent,
+      // The blended measure the pacing status is actually derived from. Without
+      // it the digest reads "0% covered — on track", which a reader cannot
+      // reconcile.
+      progressPercent: p.progressPercent,
       expectedPercent: p.expectedPercent,
+      loggingPercent: p.loggingPercent,
       pacingStatus: p.pacingStatus,
       pacingLabel: p.pacingLabel,
       lastLoggedDate: p.lastLoggedDate,
