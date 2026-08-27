@@ -1,7 +1,7 @@
 /**
  * The An-Nasīḥah 2026–2027 syllabus as taught at the ICF Daily Maktab.
  *
- * This is reference data, not sample data: the terms, the per-grade strand
+ * This is reference data, not sample data: the terms, the per-grade subject
  * sequence and the memorization targets are the school's actual standards.
  * Administrators can edit any of it in the Curriculum screen once running.
  */
@@ -15,7 +15,7 @@ const TERMS = [
       end_date: '2026-10-09',
       is_current: 1,
       is_interlude: 0,
-      description: 'First teaching term introducing core foundations across all strands.'
+      description: 'First teaching term introducing core foundations across all subjects.'
     },
     {
       term_number: 2,

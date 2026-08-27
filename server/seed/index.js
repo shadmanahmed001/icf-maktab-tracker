@@ -53,7 +53,7 @@ const TEACHERS = [
 /**
  * Per-class behaviour profiles, so the pacing dashboard shows a realistic
  * spread instead of every class sitting at the same number. `diligence` drives
- * how reliably the class logs its daily check-off.
+ * how reliably the class logs its daily log.
  */
 const CLASS_PROFILES = {
   'Grade 1 Boys': { diligence: 0.97, mastery: 'high' },
@@ -231,7 +231,7 @@ function seedStudentsAndFamilies(classIds, passwordHash) {
 
       studentSeq += 1;
       const code = `ICF-${String(studentSeq).padStart(4, '0')}`;
-      // Grade 1 pupils are about six years old at the start of the year.
+      // Grade 1 students are about six years old at the start of the year.
       const birthYear = 2026 - (grade + 5);
 
       const studentId = run(
@@ -294,7 +294,7 @@ function seedLessonHistory(classIds, teacherIds, assistant, today) {
     );
     if (!topics.length) continue;
 
-    // Track how many sessions each strand has had, so mastery ratchets up.
+    // Track how many sessions each subject has had, so mastery ratchets up.
     const sessionsPerTopic = new Map();
 
     for (const date of days) {
@@ -305,7 +305,7 @@ function seedLessonHistory(classIds, teacherIds, assistant, today) {
       const seen = (sessionsPerTopic.get(topic.id) || 0) + 1;
       sessionsPerTopic.set(topic.id, seen);
 
-      // Mastery is judged only once a strand has had a few sessions.
+      // Mastery is judged only once a subject has had a few sessions.
       const scale = MASTERY_BY_PROFILE[profile.mastery];
       const mastery = seen <= 2
         ? (profile.mastery === 'low' ? 'emerging' : 'developing')
@@ -329,7 +329,7 @@ function seedLessonHistory(classIds, teacherIds, assistant, today) {
           memorization ? `${memorization.surah} • ${memorization.names_of_allah}` : null,
           status, mastery,
           buildLessonNote(sessionType, status, subject),
-          isSubstitute ? 'Covered for the class teacher today; the register and workbook are on the desk.' : null,
+          isSubstitute ? 'Covered for the class teacher today; the attendance sheet and workbook are on the desk.' : null,
         ]
       );
     }
@@ -346,7 +346,7 @@ function buildLessonNote(sessionType, status, subject) {
     case 'oral_testing':
       return 'Oral testing round: most of the class recited confidently, a few need another week.';
     case 'practical_demo':
-      return 'Practical demonstration in the ablution area; every pupil took a turn.';
+      return 'Practical demonstration in the ablution area; every student took a turn.';
     case 'revision':
       return 'Revision session before moving on; recall was noticeably stronger than last week.';
     default:
@@ -400,16 +400,16 @@ function seedAttendance(term, today) {
   }
 }
 
-const STRANDS_BY_TERM = {
+const SUBJECTS_BY_TERM = {
   1: ['Fiqh', 'Aḥādīth', 'Sīrah', "ʿAqā'id", 'Akhlāq'],
   2: ['Fiqh', 'Aḥādīth', 'Sīrah', "ʿAqā'id", 'Akhlāq'],
   3: ['Fiqh', 'Aḥādīth', 'Tārīkh', "ʿAqā'id", 'Akhlāq'],
   4: ['Fiqh', 'Aḥādīth', 'Tārīkh', "ʿAqā'id", 'Ādāb'],
 };
 
-/** Per-student strand assessments and memorization progress for the term. */
+/** Per-student subject assessments and memorization progress for the term. */
 function seedStudentProgress(term, classIds, teacherIds, today) {
-  const strands = STRANDS_BY_TERM[term.term_number] || STRANDS_BY_TERM[1];
+  const subjects = SUBJECTS_BY_TERM[term.term_number] || SUBJECTS_BY_TERM[1];
 
   // A teacher records a judgement on a day they were teaching, so draw the
   // dates from the term's actual teaching days rather than the calendar.
@@ -432,8 +432,8 @@ function seedStudentProgress(term, classIds, teacherIds, today) {
     const students = all(`SELECT id FROM students WHERE class_id = ? AND is_active = 1`, [classId]);
 
     for (const s of students) {
-      // Not every strand is formally assessed this early in the term.
-      for (const subject of strands) {
+      // Not every subject is formally assessed this early in the term.
+      for (const subject of subjects) {
         if (!chance(0.72)) continue;
         const level = chance(0.15)
           ? pick(['emerging', 'developing', 'secure', 'mastered'])
@@ -493,8 +493,8 @@ function seedAnnouncements(adminIds, classIds, today) {
       audience: 'parents', pinned: 0, offset: -2,
     },
     {
-      title: 'Daily check-off reminder',
-      body: 'A reminder to all teachers: please complete the daily check-off before leaving the building. '
+      title: 'Daily log reminder',
+      body: 'A reminder to all teachers: please complete the daily log before leaving the building. '
         + 'The board reviews pacing every Sunday and gaps in the record make a class look behind when it is not.',
       audience: 'teachers', pinned: 1, offset: -6,
     },
