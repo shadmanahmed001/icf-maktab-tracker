@@ -256,17 +256,19 @@ the real application with a working database is one command away on any machine:
 ```bash
 docker run -d --name maktab -p 3000:3000 \
   -e JWT_SECRET="$(openssl rand -hex 32)" \
-  -e DEMO_MODE=false \
+  -e DEMO_MODE=true \
   -v maktab_data:/app/data \
-  ghcr.io/shadmanahmed001/icf-maktab-tracker:main
+  ghcr.io/shadmanahmed001/icf-maktab-tracker:claude-portals-admin-teacher-parent-bxjw1q
 ```
 
-Use the branch name as the tag to run a specific branch. Data lives on the
-`maktab_data` volume and survives upgrades — pull a new image, recreate the
-container, and the database is untouched.
+The tag is the branch name with slashes replaced by dashes; `:latest` exists
+only once a build has run on `main`. Data lives on the `maktab_data` volume and
+survives upgrades — pull a new image, recreate the container, and the database
+is untouched.
 
-For a pilot where testers should sign themselves in, keep `DEMO_MODE=true` so
-the account list stays on the sign-in screen.
+For a pilot where testers sign themselves in, keep `DEMO_MODE=true` as above so
+the account list stays on the sign-in screen. Set it to `false` — and reseed
+with your own roll — once real families are using it.
 
 ### Building it yourself
 
