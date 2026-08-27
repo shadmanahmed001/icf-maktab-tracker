@@ -106,11 +106,18 @@ portal:
 
 Every standard has both a topic and an indicator — there are no blank entries.
 
-**One known gap:** Grade 4, Term 2 has no Monday (Fiqh) standard, so that grade
-has 19 standards where the others have 20 or 21. This gap is in the source data
-the project started from, not something introduced since. The admin Curriculum
-screen now detects gaps of this kind and shows a banner linking straight to the
-term that needs filling — add the standard and the banner clears.
+**No gaps remain.** Every standard in the source document
+(`ICF_Maktab_Islamic_Studies_Standards_2026-2027_Sirah-then-Tarikh_2.pdf`) is
+present: 120 weekday standards across 6 grades × 4 terms × 5 subjects, plus the
+Grade 6 Term 2 gender variant, and all 24 memorization targets.
+
+An earlier version of this file described Grade 4, Term 2 as having no Monday
+(Fiqh) standard, and blamed the source data. That was wrong on both counts. The
+standard exists in the syllabus, and it had been entered here with `grade: 2`
+instead of `grade: 4` — so it sat in the Grade 4 block while counting towards
+Grade 2, leaving Grade 4 with 19 standards and Grade 2 with 21. Both are now 20.
+The Curriculum screen still detects gaps of this kind and links straight to any
+term that needs filling, which is how a future mis-entry would surface.
 
 ### How pacing is judged
 

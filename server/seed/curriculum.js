@@ -146,7 +146,7 @@ const CURRICULUM_TOPICS = [
     { grade: 4, gender_track: 'general', term: 1, day: 'Thursday', subject: 'ʿAqā\'id', topic: 'The Major Signs (overview); the Mahdī', indicator: 'List the major signs; describe the Mahdī', seq: 1 },
     { grade: 4, gender_track: 'general', term: 1, day: 'Friday', subject: 'Akhlāq', topic: 'Trust (amānah)', indicator: 'Explain the meaning and importance of amānah', seq: 1 },
     // Term 2
-    { grade: 2, gender_track: 'general', term: 2, day: 'Monday', subject: 'Fiqh', topic: 'Nawāqiḍ of masaḥ; masaḥ on a wound; the wājib acts of ṣalāh', indicator: 'List the wājibāt of ṣalāh', seq: 2 },
+    { grade: 4, gender_track: 'general', term: 2, day: 'Monday', subject: 'Fiqh', topic: 'Nawāqiḍ of masaḥ; masaḥ on a wound; the wājib acts of ṣalāh', indicator: 'List the wājibāt of ṣalāh', seq: 2 },
     { grade: 4, gender_track: 'general', term: 2, day: 'Tuesday', subject: 'Aḥādīth', topic: 'Ḥadīth 4 (Thanking others), 5 (Friends), 6 (Kindness)', indicator: 'Recite and explain Aḥādīth 4–6', seq: 2 },
     { grade: 4, gender_track: 'general', term: 2, day: 'Wednesday', subject: 'Sīrah', topic: 'Islamic brotherhood; treaties & the hypocrites; Badr, Uḥud, Aḥzāb', indicator: 'Sequence the major early battles of Madīnah', seq: 2 },
     { grade: 4, gender_track: 'general', term: 2, day: 'Thursday', subject: 'ʿAqā\'id', topic: 'The Dajjāl; his stories and protection against him', indicator: 'Describe the Dajjāl and how to seek protection', seq: 2 },
