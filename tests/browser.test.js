@@ -140,7 +140,7 @@ const ADMIN_STEPS = [
   { path: '/admin', name: 'dashboard', expect: ['Pacing radar', 'On track'] },
   { path: '/admin/pacing', name: 'pacing', expect: ['Pacing radar'] },
   { path: '/admin/classes', name: 'classes', expect: ['Grade 1 Boys', 'Track'] },
-  { path: '/admin/students', name: 'students', expect: ['pupils'] },
+  { path: '/admin/students', name: 'students', expect: ['students'] },
   { path: '/admin/people', name: 'people', expect: ['Teachers', 'Staff & families'] },
   { path: '/admin/curriculum', name: 'curriculum', expect: ['Curriculum', 'Memorization target'] },
   { path: '/admin/calendar', name: 'calendar', expect: ['Terms & calendar', 'Active term'] },
@@ -150,11 +150,11 @@ const ADMIN_STEPS = [
 ];
 
 const TEACHER_STEPS = [
-  { path: '/teacher', name: 'checkoff', expect: ['check-off', 'Where the class stands', 'Memorization target', 'From the office'] },
+  { path: '/teacher', name: 'checkoff', expect: ["Today's lesson", 'Where the class stands', 'Memorization target', 'From the office'] },
   { path: '/teacher/attendance', name: 'attendance', expect: ['Attendance', 'All present'] },
   // Pupils, syllabus and homework are tabs of one "My class" page now.
-  { path: '/teacher/roster', name: 'myclass-pupils', expect: ['My class', 'Pupils & progress'] },
-  { path: '/teacher/roster?tab=syllabus', name: 'myclass-syllabus', expect: ['My class', 'The five strands'] },
+  { path: '/teacher/roster', name: 'myclass-students', expect: ['My class', 'Students & progress'] },
+  { path: '/teacher/roster?tab=syllabus', name: 'myclass-syllabus', expect: ['My class', 'The five subjects'] },
   { path: '/teacher/roster?tab=homework', name: 'myclass-homework', expect: ['My class', 'Set homework'] },
   { path: '/teacher/messages', name: 'messages', expect: ['Parent messages'] },
   { path: '/teacher/notices', name: 'notices', expect: ['Notices'] },
@@ -163,7 +163,7 @@ const TEACHER_STEPS = [
 
 const PARENT_STEPS = [
   { path: '/family', name: 'progress', expect: ['is doing', 'What the teacher says', 'Attendance', 'Memorization'] },
-  { path: '/family/report', name: 'report-card', expect: ['Report card', 'Attainment by strand'] },
+  { path: '/family/report', name: 'report-card', expect: ['Report card', 'Progress by subject'] },
   { path: '/family/memorization', name: 'memorization', expect: ['Memorization'] },
   { path: '/family/lessons', name: 'lessons', expect: ['Lessons covered'] },
   { path: '/family/attendance', name: 'attendance', expect: ['Attendance', 'Session by session'] },
@@ -213,7 +213,7 @@ async function runRole(browser, base, role, email, steps) {
   }
 }
 
-/** The teacher check-off and register are the two flows that must work on a phone. */
+/** The teacher daily log and attendance are the two flows that must work on a phone. */
 async function runResponsive(browser, base) {
   log('\n── Mobile layout ──');
   const { page, context, errors } = await newPage(browser, PHONE);
@@ -232,7 +232,7 @@ async function runResponsive(browser, base) {
     const overflow = await page.evaluate(
       () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1
     );
-    assertTrue(!overflow, 'check-off page does not scroll horizontally on a phone');
+    assertTrue(!overflow, 'daily log page does not scroll horizontally on a phone');
 
     await page.screenshot({ path: path.join(SHOT_DIR, 'mobile-teacher-checkoff.png'), fullPage: true });
 
@@ -241,8 +241,8 @@ async function runResponsive(browser, base) {
     const attendanceOverflow = await page.evaluate(
       () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1
     );
-    assertTrue(!attendanceOverflow, 'register does not scroll horizontally on a phone');
-    await page.screenshot({ path: path.join(SHOT_DIR, 'mobile-teacher-register.png'), fullPage: true });
+    assertTrue(!attendanceOverflow, 'attendance does not scroll horizontally on a phone');
+    await page.screenshot({ path: path.join(SHOT_DIR, 'mobile-teacher-attendance.png'), fullPage: true });
 
     // The drawer menu opens. Scoped to the drawer, since the desktop sidebar is
     // present in the DOM but hidden at this width.

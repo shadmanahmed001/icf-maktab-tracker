@@ -147,13 +147,13 @@ export function TeacherPortal() {
   const selected = available.find((c) => c.id === selectedId) || null;
 
   // Four items, in the order a teacher's day runs. Anything that is not part of
-  // the daily job sits under Reference, and notices appear on the check-off
+  // the daily job sits under Reference, and notices appear on the daily log
   // screen rather than as a nav item nobody visits.
   const nav = [
     {
       items: [
-        { to: '/teacher', end: true, label: "Today's check-off", icon: ClipboardCheck },
-        { to: '/teacher/attendance', label: 'Attendance register', icon: UserCheck },
+        { to: '/teacher', end: true, label: "Today's lesson", icon: ClipboardCheck },
+        { to: '/teacher/attendance', label: 'Attendance', icon: UserCheck },
         { to: '/teacher/roster', label: 'My class', icon: GraduationCap },
         { to: '/teacher/messages', label: 'Parent messages', icon: MessageSquare },
       ],
@@ -185,8 +185,8 @@ export function TeacherPortal() {
   }
 
   const TITLES = {
-    '/teacher': "Today's check-off",
-    '/teacher/attendance': 'Attendance register',
+    '/teacher': "Today's lesson",
+    '/teacher/attendance': 'Attendance',
     '/teacher/roster': 'My class',
     '/teacher/messages': 'Parent messages',
     '/teacher/notices': 'Notices',
@@ -204,8 +204,8 @@ export function TeacherPortal() {
         title={title}
         subtitle={selected ? `${selected.name}${selected.room ? ` · ${selected.room}` : ''}` : user.full_name}
         bottomNav={[
-          { to: '/teacher', end: true, label: 'Check-off', icon: ClipboardCheck },
-          { to: '/teacher/attendance', label: 'Register', icon: UserCheck },
+          { to: '/teacher', end: true, label: 'Daily log', icon: ClipboardCheck },
+          { to: '/teacher/attendance', label: 'Attendance', icon: UserCheck },
           { to: '/teacher/roster', label: 'My class', icon: GraduationCap },
           { to: '/teacher/messages', label: 'Messages', icon: MessageSquare },
         ]}

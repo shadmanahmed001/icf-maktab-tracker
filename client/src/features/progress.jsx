@@ -26,13 +26,13 @@ export function MasteryScaleLegend({ className }) {
   );
 }
 
-/** Strand-by-strand attainment for one student in one term. */
+/** Subject-by-subject progress for one student in one term. */
 export function AssessmentTable({ assessments, emptyHint, onEdit }) {
   if (!assessments.length) {
     return (
       <EmptyState
         title="No assessments recorded yet"
-        description={emptyHint || 'Attainment appears here once the teacher has assessed each strand.'}
+        description={emptyHint || 'Progress appears here once the teacher has assessed each subject.'}
       />
     );
   }
@@ -42,8 +42,8 @@ export function AssessmentTable({ assessments, emptyHint, onEdit }) {
       <Table>
         <thead>
           <tr>
-            <Th>Strand</Th>
-            <Th align="center">Attainment</Th>
+            <Th>Subject</Th>
+            <Th align="center">Progress</Th>
             <Th>Teacher&rsquo;s comment</Th>
             <Th align="right">Assessed</Th>
             {onEdit && <Th align="right">Edit</Th>}
@@ -223,7 +223,7 @@ export function AttendanceRecordList({ records, className }) {
 /** Lessons a class covered — the parent-facing "what did they learn" view. */
 export function LessonHistoryList({ lessons, className, showTeacher = true }) {
   if (!lessons?.length) {
-    return <EmptyState className={className} title="No lessons recorded yet" description="Lessons appear here as teachers complete the daily check-off." />;
+    return <EmptyState className={className} title="No lessons recorded yet" description="Lessons appear here as teachers complete the daily log." />;
   }
 
   return (
@@ -281,7 +281,7 @@ export function LessonHistoryList({ lessons, className, showTeacher = true }) {
 /**
  * What the teacher has written about this child, presented as remarks rather
  * than as a column of a results table. Parents come looking for exactly this,
- * so it reads as prose with the strand and the judgement attached.
+ * so it reads as prose with the subject and the judgement attached.
  */
 export function TeacherComments({ assessments, childName, className }) {
   const withComments = (assessments || []).filter((a) => a.comment && a.comment.trim());
@@ -296,7 +296,7 @@ export function TeacherComments({ assessments, childName, className }) {
           No written comments yet this term
         </p>
         <p className="mt-1 text-[0.8rem]" style={{ color: 'var(--text-muted)' }}>
-          {childName ? `${childName}'s teacher` : 'The class teacher'} adds a remark for each strand
+          {childName ? `${childName}'s teacher` : 'The class teacher'} adds a remark for each subject
           as it is assessed. They will appear here and on the term report card.
         </p>
       </div>
@@ -335,14 +335,14 @@ export function TeacherComments({ assessments, childName, className }) {
   );
 }
 
-/** The mark colour for an attainment band, used for the remark's edge stripe. */
+/** The mark colour for an progress band, used for the remark's edge stripe. */
 function markForLevel(level) {
   const tone = MASTERY[level]?.tone || 'neutral';
   return `var(--${tone})`;
 }
 
-/** Overall attainment as a single headline, when one number is the message. */
-export function OverallAttainment({ overall, className }) {
+/** Overall progress as a single headline, when one number is the message. */
+export function OverallProgress({ overall, className }) {
   if (!overall) {
     return (
       <div className={cx('text-center', className)}>
@@ -361,7 +361,7 @@ export function OverallAttainment({ overall, className }) {
       />
       <Badge tone={MASTERY[overall.level]?.tone || 'neutral'} className="mt-2">{overall.label}</Badge>
       <p className="mt-1 text-center text-[0.74rem]" style={{ color: 'var(--text-muted)' }}>
-        Averaged across all assessed strands
+        Averaged across all assessed subjects
       </p>
     </div>
   );

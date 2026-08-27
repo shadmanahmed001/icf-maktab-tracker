@@ -1,9 +1,9 @@
 /**
- * The daily check-off — the screen this whole system lives or dies by.
+ * The daily log — the screen this whole system lives or dies by.
  *
  * Design intent: a teacher on a phone, between classes, should be able to
  * record the lesson in a handful of taps. So everything is pre-filled from the
- * curriculum (today's strand, the standard due, the memorization target) and
+ * curriculum (today's subject, the standard due, the memorization target) and
  * every choice is a tap target rather than a dropdown or free text. Free text
  * is optional and sits below the save button's line of sight.
  */
@@ -191,10 +191,10 @@ function CheckOffScreen({ data, date, onDateChange, onSaved, className }) {
     <>
       <PageHeader
         eyebrow={`${data.term.title} · ${data.dayName}`}
-        title={isToday ? "Today's check-off" : `Check-off for ${mediumDate(date)}`}
+        title={isToday ? "Today's lesson" : `Daily log for ${mediumDate(date)}`}
         description={
           data.expectedSubject
-            ? `${longDate(date)} — today's strand for ${className} is ${data.expectedSubject}.`
+            ? `${longDate(date)} — today's subject for ${className} is ${data.expectedSubject}.`
             : `${longDate(date)} is not a teaching day, but you can still record a session.`
         }
         actions={(
@@ -344,7 +344,7 @@ function CheckOffScreen({ data, date, onDateChange, onSaved, className }) {
                   icon={<ClipboardCheck size={17} />}
                   onClick={() => save.run().catch(() => {})}
                 >
-                  {existingLog ? 'Update the record' : 'Save the check-off'}
+                  {existingLog ? 'Update the record' : 'Save the daily log'}
                 </Button>
                 {existingLog && (
                   <Button variant="ghost" onClick={() => setEditing(false)} disabled={save.busy}>Cancel</Button>
@@ -355,11 +355,11 @@ function CheckOffScreen({ data, date, onDateChange, onSaved, className }) {
 
           <OfficeNotices />
 
-          {/* Handover notes left by others */}
+          {/* Notes for the next teacher left by others */}
           {recentHandovers.length > 0 && (
             <Card>
               <SectionHeading
-                title="Handover notes"
+                title="Notes for the next teacher"
                 description="Left by whoever last covered this class."
               />
               <ul className="space-y-2">
@@ -416,13 +416,13 @@ function CheckOffScreen({ data, date, onDateChange, onSaved, className }) {
           </Card>
 
           <Card>
-            <SectionHeading title="Register" description={`${data.class.student_count} pupils in this class.`} />
+            <SectionHeading title="Attendance" description={`${data.class.student_count} students in this class.`} />
             {attendanceTaken > 0 ? (
               <Alert tone="ok">
-                Attendance recorded for {attendanceTaken} of {roster.length} pupils on {mediumDate(date)}.
+                Attendance recorded for {attendanceTaken} of {roster.length} students on {mediumDate(date)}.
               </Alert>
             ) : (
-              <Alert tone="warn">No register has been taken for {mediumDate(date)} yet.</Alert>
+              <Alert tone="warn">No attendance has been taken for {mediumDate(date)} yet.</Alert>
             )}
             <Button
               as={Link}
@@ -431,7 +431,7 @@ function CheckOffScreen({ data, date, onDateChange, onSaved, className }) {
               className="mt-3 w-full"
               icon={<UserCheck size={15} />}
             >
-              {attendanceTaken > 0 ? 'Review the register' : 'Take the register'}
+              {attendanceTaken > 0 ? 'Review the attendance' : 'Take the attendance'}
             </Button>
           </Card>
 
@@ -459,7 +459,7 @@ function CheckOffScreen({ data, date, onDateChange, onSaved, className }) {
             <div className="flex items-start gap-2.5">
               <Info size={16} className="mt-0.5 shrink-0" style={{ color: 'var(--accent)' }} />
               <p className="text-[0.78rem] leading-relaxed" style={{ color: 'var(--text-muted)' }}>
-                A strand counts as achieved once you record it as taught in full and judge the class
+                A subject counts as achieved once you record it as taught in full and judge the class
                 <em> secure</em> or <em>mastered</em>. Until then it shows as being taught, which still
                 counts towards your pacing.
               </p>

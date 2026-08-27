@@ -8,7 +8,7 @@ import {
 } from '../../ui';
 import {
   AssessmentTable, AttendanceRecordList, AttendanceSummaryCard,
-  MasteryScaleLegend, MemorizationPanel, OverallAttainment,
+  MasteryScaleLegend, MemorizationPanel, OverallProgress,
 } from '../../features/progress';
 import { mediumDate } from '../../lib/format';
 import { useState } from 'react';
@@ -61,8 +61,8 @@ export default function AdminStudentDetail() {
 
               <div className="grid gap-5 lg:grid-cols-3">
                 <Card>
-                  <SectionHeading title="Overall attainment" />
-                  <OverallAttainment overall={overall} />
+                  <SectionHeading title="Overall progress" />
+                  <OverallProgress overall={overall} />
                 </Card>
 
                 <Card className="lg:col-span-2">
@@ -109,8 +109,8 @@ export default function AdminStudentDetail() {
 
               <Card className="mt-5">
                 <SectionHeading
-                  title={`Attainment — ${term.title}`}
-                  description="One judgement per strand, recorded by the class teacher."
+                  title={`Progress — ${term.title}`}
+                  description="One judgement per subject, recorded by the class teacher."
                   action={<MasteryScaleLegend />}
                 />
                 <AssessmentTable assessments={assessments} />

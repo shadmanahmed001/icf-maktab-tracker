@@ -256,7 +256,7 @@ export const demoApi = {
     progress: (classId, params) => read(`/teacher/classes/${classId}/progress${query(params)}`),
     logs: (classId, params) => read(`/teacher/classes/${classId}/logs${query(params)}`),
 
-    /** Reflect the saved lesson back into the check-off screen's cached payload. */
+    /** Reflect the saved lesson back into the daily log screen's cached payload. */
     saveLesson: (payload) => {
       const path = `/teacher/classes/${payload.class_id}/today`;
       patch(path, (data) => ({

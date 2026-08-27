@@ -1,4 +1,4 @@
-/** The class roll with each pupil's standing at a glance. */
+/** The class class list with each student's standing at a glance. */
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
@@ -12,7 +12,7 @@ import {
 import { BandDistribution } from '../../charts';
 import { percent, pluralise } from '../../lib/format';
 
-export default function PupilsPanel() {
+export default function StudentsPanel() {
   const { selectedId } = useSelectedClass();
   const [search, setSearch] = useState('');
   const query = useApi(() => api.teacher.roster(selectedId), [selectedId], { skip: !selectedId });
@@ -20,7 +20,7 @@ export default function PupilsPanel() {
   return (
     <>
       <div className="mb-4 max-w-xs">
-        <SearchInput value={search} onChange={setSearch} placeholder="Search pupil…" />
+        <SearchInput value={search} onChange={setSearch} placeholder="Search student…" />
       </div>
 
       <AsyncSection query={query} rows={6}>
@@ -31,7 +31,7 @@ export default function PupilsPanel() {
             : roster;
 
           if (!roster.length) {
-            return <EmptyState title="No pupils enrolled" description="Ask the office to enrol pupils into this class." />;
+            return <EmptyState title="No students enrolled" description="Ask the office to enrol students into this class." />;
           }
 
           const assessedTotal = roster.reduce((sum, s) => sum + s.assessedCount, 0);
@@ -42,7 +42,7 @@ export default function PupilsPanel() {
               <div className="mb-5 grid gap-4 lg:grid-cols-2">
                 <Card>
                   <p className="mb-2 text-[0.8rem] font-semibold" style={{ color: 'var(--text-strong)' }}>
-                    Memorization mastered, by pupil count
+                    Memorization mastered, by student count
                   </p>
                   <BandDistribution
                     bands={[0, 1, 2, 3].map((count) => ({
@@ -62,20 +62,20 @@ export default function PupilsPanel() {
                   </p>
                   <ul className="space-y-1.5 text-[0.82rem]" style={{ color: 'var(--text-body)' }}>
                     <li>
-                      {pluralise(roster.length, 'pupil')} on the roll,{' '}
-                      {pluralise(assessedTotal, 'strand assessment')} recorded.
+                      {pluralise(roster.length, 'student')} on the class list,{' '}
+                      {pluralise(assessedTotal, 'subject assessment')} recorded.
                     </li>
                     <li>
                       {lowAttendance.length === 0
-                        ? 'No pupil is below 85% attendance.'
-                        : `${lowAttendance.length} pupil${lowAttendance.length === 1 ? '' : 's'} below 85% attendance: ${
+                        ? 'No student is below 85% attendance.'
+                        : `${lowAttendance.length} student${lowAttendance.length === 1 ? '' : 's'} below 85% attendance: ${
                           lowAttendance.slice(0, 3).map((s) => s.first_name).join(', ')}${lowAttendance.length > 3 ? '…' : ''}`}
                     </li>
                     <li>
                       {(() => {
                         const none = roster.filter((s) => s.memorizedCount === 0).length;
-                        if (none === 0) return 'Every pupil has mastered at least one memorization item.';
-                        return `${pluralise(none, 'pupil has', 'pupils have')} not yet mastered any `
+                        if (none === 0) return 'Every student has mastered at least one memorization item.';
+                        return `${pluralise(none, 'student has', 'students have')} not yet mastered any `
                           + 'memorization item this term.';
                       })()}
                     </li>
@@ -88,10 +88,10 @@ export default function PupilsPanel() {
                   <Table>
                     <thead>
                       <tr>
-                        <Th>Pupil</Th>
+                        <Th>Student</Th>
                         <Th align="center">Attendance</Th>
                         <Th align="center">Absences</Th>
-                        <Th align="center">Strands assessed</Th>
+                        <Th align="center">Subjects assessed</Th>
                         <Th align="center">Memorization</Th>
                         <Th>Guardians</Th>
                         <Th align="right" />

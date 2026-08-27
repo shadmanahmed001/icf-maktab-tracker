@@ -121,7 +121,7 @@ export default function HomeworkPanel() {
           )}
         >
           <div className="space-y-3">
-            <Field label="Strand" required>
+            <Field label="Subject" required>
               <Select
                 value={creating.subject}
                 onChange={(e) => setCreating({ ...creating, subject: e.target.value })}

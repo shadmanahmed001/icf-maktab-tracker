@@ -76,7 +76,7 @@ export function timeAgo(timestamp) {
 
 export const PACING = {
   on_track: { label: 'On track', tone: 'ok', description: 'Coverage and record-keeping are both where they should be.' },
-  watch: { label: 'Needs attention', tone: 'warn', description: 'Slipping behind the term plan, or check-offs are being missed.' },
+  watch: { label: 'Needs attention', tone: 'warn', description: 'Slipping behind the term plan, or daily logs are being missed.' },
   behind: { label: 'Behind pace', tone: 'risk', description: 'Significantly behind the term plan, or the daily record has large gaps.' },
   not_started: { label: 'Not started', tone: 'neutral', description: 'The term has not begun for this class yet.' },
 };

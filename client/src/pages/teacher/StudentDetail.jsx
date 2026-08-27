@@ -1,5 +1,5 @@
 /**
- * One pupil, as their teacher works with them: record attainment per strand,
+ * One student, as their teacher works with them: record progress per subject,
  * verify memorization, and message the family — all without leaving the page.
  */
 import { useState } from 'react';
@@ -13,11 +13,11 @@ import {
 } from '../../ui';
 import {
   AssessmentTable, AttendanceRecordList, AttendanceSummaryCard,
-  MasteryScaleLegend, MemorizationPanel, OverallAttainment,
+  MasteryScaleLegend, MemorizationPanel, OverallProgress,
 } from '../../features/progress';
 import { MASTERY, MASTERY_ORDER, MEMORIZATION_ITEM, mediumDate } from '../../lib/format';
 
-const STRANDS = ['Fiqh', 'Aḥādīth', 'Sīrah', 'Tārīkh', "ʿAqā'id", 'Akhlāq', 'Ādāb'];
+const SUBJECTS = ['Fiqh', 'Aḥādīth', 'Sīrah', 'Tārīkh', "ʿAqā'id", 'Akhlāq', 'Ādāb'];
 
 export default function TeacherStudentDetail() {
   const { studentId } = useParams();
@@ -30,7 +30,7 @@ export default function TeacherStudentDetail() {
   return (
     <>
       <Button as={Link} to="/teacher/roster" variant="ghost" size="sm" icon={<ArrowLeft size={15} />} className="mb-3">
-        Back to the roll
+        Back to the class list
       </Button>
 
       <AsyncSection query={query} rows={6}>
@@ -64,14 +64,14 @@ export default function TeacherStudentDetail() {
 
               <div className="grid gap-5 lg:grid-cols-3">
                 <Card>
-                  <SectionHeading title="Overall attainment" />
-                  <OverallAttainment overall={overall} />
+                  <SectionHeading title="Overall progress" />
+                  <OverallProgress overall={overall} />
                 </Card>
 
                 <Card className="lg:col-span-2">
                   <SectionHeading
-                    title="Attainment by strand"
-                    description="Your judgement for this term. Tap a strand to record or change it."
+                    title="Progress by subject"
+                    description="Your judgement for this term. Tap a subject to record or change it."
                     action={<MasteryScaleLegend />}
                   />
                   <AssessmentTable
@@ -82,10 +82,10 @@ export default function TeacherStudentDetail() {
 
                   <div className="mt-4">
                     <p className="mb-2 text-[0.78rem] font-semibold" style={{ color: 'var(--text-body)' }}>
-                      Record a strand
+                      Record a subject
                     </p>
                     <div className="flex flex-wrap gap-2">
-                      {STRANDS.map((subject) => (
+                      {SUBJECTS.map((subject) => (
                         <Button
                           key={subject}
                           size="sm"
@@ -132,7 +132,7 @@ export default function TeacherStudentDetail() {
                 <SectionHeading title="Guardians" />
                 {guardians.length === 0 ? (
                   <p className="text-[0.82rem]" style={{ color: 'var(--warn-ink)' }}>
-                    No guardian is linked to this pupil — ask the office to link the family.
+                    No guardian is linked to this student — ask the office to link the family.
                   </p>
                 ) : (
                   <dl>
@@ -200,7 +200,7 @@ function AssessmentDialog({ studentId, value, onChange, onClose, onSaved }) {
       open
       onClose={onClose}
       title={value.subject}
-      description="Your judgement of where this pupil stands on this strand for the term."
+      description="Your judgement of where this student stands on this subject for the term."
       footer={(
         <>
           <Button variant="secondary" onClick={onClose} disabled={save.busy}>Cancel</Button>
@@ -210,7 +210,7 @@ function AssessmentDialog({ studentId, value, onChange, onClose, onSaved }) {
     >
       <div className="space-y-4">
         <div>
-          <p className="mb-1.5 text-[0.78rem] font-semibold" style={{ color: 'var(--text-body)' }}>Attainment</p>
+          <p className="mb-1.5 text-[0.78rem] font-semibold" style={{ color: 'var(--text-body)' }}>Progress</p>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
             {MASTERY_ORDER.map((level) => {
               const active = value.mastery_level === level;

@@ -9,7 +9,7 @@ import { LessonHistoryList } from '../../features/progress';
 export default function FamilyLessons() {
   const { selectedId } = useSelectedChild();
   const [termNumber, setTermNumber] = useState(null);
-  const [strand, setStrand] = useState('all');
+  const [subject, setSubject] = useState('all');
 
   const terms = useApi(() => api.terms(), []);
   const query = useApi(
@@ -37,21 +37,21 @@ export default function FamilyLessons() {
 
       <AsyncSection query={query} rows={5}>
         {(data) => {
-          const strands = [...new Set(data.lessons.map((l) => l.subject))];
-          const filtered = strand === 'all' ? data.lessons : data.lessons.filter((l) => l.subject === strand);
+          const subjects = [...new Set(data.lessons.map((l) => l.subject))];
+          const filtered = subject === 'all' ? data.lessons : data.lessons.filter((l) => l.subject === subject);
 
           return (
             <>
-              {strands.length > 1 && (
+              {subjects.length > 1 && (
                 <div className="mb-4 overflow-x-auto">
                   <SegmentedControl
-                    ariaLabel="Filter by strand"
-                    value={strand}
-                    onChange={setStrand}
+                    ariaLabel="Filter by subject"
+                    value={subject}
+                    onChange={setSubject}
                     size="sm"
                     options={[
                       { value: 'all', label: `All (${data.lessons.length})` },
-                      ...strands.map((s) => ({
+                      ...subjects.map((s) => ({
                         value: s,
                         label: `${s} (${data.lessons.filter((l) => l.subject === s).length})`,
                       })),

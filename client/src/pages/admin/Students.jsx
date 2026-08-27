@@ -1,4 +1,4 @@
-/** The student roll: enrol, edit, move between classes, link guardians. */
+/** The student list: enrol, edit, move between classes, link guardians. */
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Plus, Pencil, UserMinus, Link2 } from 'lucide-react';
@@ -49,7 +49,7 @@ export default function AdminStudents() {
       <PageHeader
         eyebrow="School structure"
         title="Students"
-        description="The maktab roll. Withdrawing a pupil keeps their academic record for reference."
+        description="The maktab class list. Withdrawing a student keeps their academic record for reference."
         actions={(
           <Button variant="primary" icon={<Plus size={15} />} onClick={() => setEditing({ ...BLANK })}>
             Enrol student
@@ -79,21 +79,21 @@ export default function AdminStudents() {
         {(rows) => (rows.length === 0 ? (
           <EmptyState
             title="No students match"
-            description="Try a different search, or enrol a new pupil."
+            description="Try a different search, or enrol a new student."
             action={<Button variant="primary" onClick={() => setEditing({ ...BLANK })}>Enrol student</Button>}
           />
         ) : (
           <Card padded={false}>
             <div className="flex items-center justify-between px-4 py-3" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
               <p className="text-[0.8rem]" style={{ color: 'var(--text-muted)' }}>
-                {rows.length} {rows.length === 1 ? 'pupil' : 'pupils'}
+                {rows.length} {rows.length === 1 ? 'student' : 'students'}
               </p>
             </div>
             <TableWrap className="rounded-none border-0">
               <Table>
                 <thead>
                   <tr>
-                    <Th>Pupil</Th>
+                    <Th>Student</Th>
                     <Th>Code</Th>
                     <Th>Class</Th>
                     <Th>Guardians</Th>
@@ -182,7 +182,7 @@ export default function AdminStudents() {
         confirmLabel="Withdraw"
         busy={withdraw.busy}
       >
-        They will no longer appear on registers or in teacher portals. Their attendance,
+        They will no longer appear on attendance records or in teacher portals. Their attendance,
         assessments and reports are kept on file.
       </ConfirmDialog>
     </>

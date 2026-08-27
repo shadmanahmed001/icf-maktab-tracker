@@ -62,7 +62,7 @@ export default function AdminCurriculum() {
       <PageHeader
         eyebrow="Academic standards"
         title="Curriculum"
-        description="The An-Nasīḥah syllabus for 2026–2027. Five strands per term, one per teaching day, with the observable indicator each pupil should reach."
+        description="The An-Nasīḥah syllabus for 2026–2027. Five subjects per term, one per teaching day, with the observable indicator each student should reach."
         actions={(
           <Button
             variant="primary"
@@ -111,7 +111,7 @@ export default function AdminCurriculum() {
                 {data.topics.length === 0 ? (
                   <EmptyState
                     title="No standards for this grade and term"
-                    description="Add the strands taught in this term, or choose a different term."
+                    description="Add the subjects taught in this term, or choose a different term."
                     action={(
                       <Button variant="primary" onClick={() => setEditing({ ...BLANK, grade, term_number: termNumber })}>
                         Add standard
@@ -168,7 +168,7 @@ export default function AdminCurriculum() {
                 </Card>
 
                 <Card>
-                  <SectionHeading title="Weekly strand pattern" />
+                  <SectionHeading title="Weekly subject pattern" />
                   <ul className="space-y-1.5 text-[0.8rem]">
                     {[
                       ['Monday', 'Fiqh'],
@@ -176,10 +176,10 @@ export default function AdminCurriculum() {
                       ['Wednesday', 'Sīrah → Tārīkh from Term 3'],
                       ['Thursday', "ʿAqā'id"],
                       ['Friday', 'Akhlāq → Ādāb in Term 4'],
-                    ].map(([day, strand]) => (
+                    ].map(([day, subject]) => (
                       <li key={day} className="flex justify-between gap-3">
                         <span style={{ color: 'var(--text-muted)' }}>{day}</span>
-                        <span className="term text-right font-medium" style={{ color: 'var(--text-strong)' }}>{strand}</span>
+                        <span className="term text-right font-medium" style={{ color: 'var(--text-strong)' }}>{subject}</span>
                       </li>
                     ))}
                   </ul>
@@ -229,7 +229,7 @@ function TopicForm({ value, onChange, onClose, onSave, busy, error, terms }) {
       open
       onClose={onClose}
       title={value.id ? 'Edit standard' : 'Add a standard'}
-      description="The indicator is what a pupil should observably be able to do by the end of the term."
+      description="The indicator is what a student should observably be able to do by the end of the term."
       footer={(
         <>
           <Button variant="secondary" onClick={onClose} disabled={busy}>Cancel</Button>
@@ -263,7 +263,7 @@ function TopicForm({ value, onChange, onClose, onSave, busy, error, terms }) {
           </Field>
           <Field label="Track">
             <Select value={value.gender_track} onChange={set('gender_track')}>
-              <option value="general">All pupils</option>
+              <option value="general">All students</option>
               <option value="boys">Boys only</option>
               <option value="girls">Girls only</option>
             </Select>
@@ -271,7 +271,7 @@ function TopicForm({ value, onChange, onClose, onSave, busy, error, terms }) {
         </div>
 
         <div className="grid gap-3 sm:grid-cols-3">
-          <Field label="Strand" required>
+          <Field label="Subject" required>
             <Select value={value.subject} onChange={set('subject')}>
               {SUBJECTS.map((s) => <option key={s} value={s}>{s}</option>)}
             </Select>
@@ -299,7 +299,7 @@ function TopicForm({ value, onChange, onClose, onSave, busy, error, terms }) {
 }
 
 /**
- * Days in a term with no standard written for them. The teacher's check-off has
+ * Days in a term with no standard written for them. The teacher's daily log has
  * nothing to suggest on such a day and the class can never reach full coverage,
  * so the gap is named here with a jump straight to the term that needs filling.
  */
@@ -313,7 +313,7 @@ function CurriculumGaps({ gaps, onJump }) {
       className="mb-4"
     >
       <p className="mb-2">
-        A weekday with no standard leaves the daily check-off with nothing to suggest, and the class
+        A weekday with no standard leaves the daily log with nothing to suggest, and the class
         cannot reach 100% coverage. Add the missing standard and the warning clears.
       </p>
       <ul className="flex flex-wrap gap-2">

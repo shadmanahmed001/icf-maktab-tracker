@@ -16,7 +16,7 @@ import { ThemeToggle } from '../features/ThemeToggle';
 
 const ROLE_META = {
   admin: { icon: ShieldCheck, label: 'Administration', blurb: 'Pacing across every grade' },
-  teacher: { icon: GraduationCap, label: 'Teacher', blurb: 'Daily check-off in under a minute' },
+  teacher: { icon: GraduationCap, label: 'Teacher', blurb: 'Daily daily log in under a minute' },
   parent: { icon: Users, label: 'Parent', blurb: "Your own child's progress" },
 };
 
@@ -104,7 +104,7 @@ export default function Login() {
             Academic standards and progress, in one place.
           </h1>
           <p className="mt-3 max-w-md text-[0.9rem] leading-relaxed" style={{ color: 'var(--text-muted)' }}>
-            The An-Nasīḥah syllabus for 2026–2027, tracked from the daily lesson check-off through
+            The An-Nasīḥah syllabus for 2026–2027, tracked from the daily lesson daily log through
             to each family&rsquo;s end-of-term report — replacing the paper binders.
           </p>
 

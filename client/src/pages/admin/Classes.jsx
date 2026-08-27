@@ -1,4 +1,4 @@
-/** Class register: create, edit, staff and archive the twelve maktab classes. */
+/** Class list: create, edit, staff and archive the twelve maktab classes. */
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Plus, Pencil, Archive, UserPlus, X } from 'lucide-react';
@@ -53,7 +53,7 @@ export default function AdminClasses() {
       <PageHeader
         eyebrow="School structure"
         title="Classes"
-        description="Grades 1–6, split by track. Archiving keeps every past lesson log and register intact."
+        description="Grades 1–6, split by track. Archiving keeps every past lesson log and attendance intact."
         actions={(
           <Button variant="primary" icon={<Plus size={15} />} onClick={() => { setError(null); setEditing({ ...BLANK }); }}>
             New class
@@ -78,7 +78,7 @@ export default function AdminClasses() {
                     <Th>Track</Th>
                     <Th>Room</Th>
                     <Th>Teachers</Th>
-                    <Th align="center">Pupils</Th>
+                    <Th align="center">Students</Th>
                     <Th align="center">Logs</Th>
                     <Th align="right">Last logged</Th>
                     <Th align="right">Manage</Th>
@@ -175,7 +175,7 @@ export default function AdminClasses() {
         busy={archive.busy}
       >
         The class will stop appearing in the pacing radar and teacher portals. Its lesson logs,
-        registers and reports are kept. Students must be moved to another class first.
+        attendance records and reports are kept. Students must be moved to another class first.
       </ConfirmDialog>
     </>
   );
@@ -307,7 +307,7 @@ function StaffingDialog({ classRow, teachers, onClose, onChanged }) {
       open
       onClose={onClose}
       title={`Teachers for ${classRow.name}`}
-      description="The lead teacher owns the daily check-off. Assistants and substitutes can also log lessons and take the register."
+      description="The lead teacher owns the daily log. Assistants and substitutes can also log lessons and take attendance."
       footer={<Button variant="secondary" onClick={onClose}>Done</Button>}
     >
       <div className="space-y-4">
@@ -333,7 +333,7 @@ function StaffingDialog({ classRow, teachers, onClose, onChanged }) {
               className="rounded-lg px-3 py-3 text-[0.82rem]"
               style={{ background: 'var(--warn-soft)', color: 'var(--warn-ink)' }}
             >
-              Nobody is assigned to this class yet, so no one can record its lessons or register.
+              Nobody is assigned to this class yet, so no one can record its lessons or attendance.
             </div>
           ) : (
             <ul className="space-y-1.5">

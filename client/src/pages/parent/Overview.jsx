@@ -18,7 +18,7 @@ import {
 } from '../../ui';
 import { CompositionBar, PacingBar, ProgressRing } from '../../charts';
 import {
-  MemorizationPanel, OverallAttainment, TeacherComments,
+  MemorizationPanel, OverallProgress, TeacherComments,
 } from '../../features/progress';
 import { ATTENDANCE, longDate, mediumDate, pluralise } from '../../lib/format';
 
@@ -79,8 +79,8 @@ export default function FamilyProgress() {
             {/* 1. The three headline figures */}
             <div className="mb-5 grid gap-4 lg:grid-cols-3">
               <Card>
-                <SectionHeading title="Progress" description="Across all strands assessed this term." />
-                <OverallAttainment overall={child.overall} />
+                <SectionHeading title="Progress" description="Across all subjects assessed this term." />
+                <OverallProgress overall={child.overall} />
               </Card>
 
               <Card>
@@ -149,7 +149,7 @@ export default function FamilyProgress() {
             <Card className="mb-5">
               <SectionHeading
                 title="What the teacher says"
-                description={`${child.first_name}'s teacher writes a remark for each strand as it is assessed.`}
+                description={`${child.first_name}'s teacher writes a remark for each subject as it is assessed.`}
                 action={(
                   <Button
                     as={Link}
@@ -174,7 +174,7 @@ export default function FamilyProgress() {
               <Card>
                 <SectionHeading
                   title="What the class is working on"
-                  description="Progress through this term's five strands."
+                  description="Progress through this term's five subjects."
                 />
                 {child.classProgress ? (
                   <>

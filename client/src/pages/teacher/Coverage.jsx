@@ -39,7 +39,7 @@ export default function SyllabusPanel() {
                 <StatTile label="Being taught" value={data.inProgressCount} sublabel="counts as half credit" tone="warn" />
                 <StatTile label="Not started" value={data.pendingCount} sublabel="still to introduce" />
                 <StatTile
-                  label="Check-offs"
+                  label="Daily logs"
                   value={`${data.loggedSessions}/${data.expectedSessions}`}
                   sublabel={`${data.loggingPercent}% of sessions`}
                   tone={data.loggingPercent < 80 ? 'warn' : 'ok'}
@@ -50,17 +50,17 @@ export default function SyllabusPanel() {
             {data.loggingPercent < 80 && (
               <Card className="mb-5" style={{ background: 'var(--warn-soft)', border: '1px solid var(--warn)' }}>
                 <p className="text-[0.85rem] font-semibold" style={{ color: 'var(--warn-ink)' }}>
-                  {data.expectedSessions - data.loggedSessions} sessions have no check-off recorded
+                  {data.expectedSessions - data.loggedSessions} sessions have no daily log recorded
                 </p>
                 <p className="mt-1 text-[0.82rem]" style={{ color: 'var(--warn-ink)' }}>
                   The office reads pacing from these records, so gaps make the class look behind even when
-                  it is not. You can backfill any past date from the check-off screen.
+                  it is not. You can backfill any past date from the daily log screen.
                 </p>
               </Card>
             )}
 
             <Card className="mb-5">
-              <SectionHeading title="The five strands" description="Each term's standard, and how far you have got." />
+              <SectionHeading title="The five subjects" description="Each term's standard, and how far you have got." />
               <ul className="space-y-3">
                 {data.coverage.map((topic) => {
                   const Icon = STATE_ICON[topic.state] || Minus;
@@ -152,7 +152,7 @@ export default function SyllabusPanel() {
       <AsyncSection query={logs} rows={4}>
         {(rows) => (
           <Card className="mt-5">
-            <SectionHeading title="Check-off history" description="Everything recorded for this class." />
+            <SectionHeading title="Daily log history" description="Everything recorded for this class." />
             {rows.length === 0 ? (
               <EmptyState title="No lessons logged yet" />
             ) : (
@@ -161,7 +161,7 @@ export default function SyllabusPanel() {
                   <thead>
                     <tr>
                       <Th>Date</Th>
-                      <Th>Strand</Th>
+                      <Th>Subject</Th>
                       <Th>Topic</Th>
                       <Th>Session</Th>
                       <Th align="center">Status</Th>

@@ -11,7 +11,7 @@ import {
   AsyncSection, Button, Card, DataRow, PageHeader, SectionHeading, Tabs,
 } from '../../ui';
 import {
-  AssessmentTable, MasteryScaleLegend, MemorizationPanel, OverallAttainment,
+  AssessmentTable, MasteryScaleLegend, MemorizationPanel, OverallProgress,
 } from '../../features/progress';
 import { ATTENDANCE, longDate, percent } from '../../lib/format';
 import { CompositionBar } from '../../charts';
@@ -32,7 +32,7 @@ export default function FamilyReportCard() {
       <PageHeader
         eyebrow="End of term"
         title="Report card"
-        description="Attainment in each strand, memorization and attendance for the term."
+        description="Progress in each subject, memorization and attendance for the term."
         actions={(
           <Button variant="primary" icon={<Printer size={15} />} onClick={() => window.print()}>
             Print
@@ -62,7 +62,7 @@ export default function FamilyReportCard() {
 
               <div className="mb-5 grid gap-4 sm:grid-cols-2">
                 <dl>
-                  <DataRow label="Pupil">{student.first_name} {student.last_name}</DataRow>
+                  <DataRow label="Student">{student.first_name} {student.last_name}</DataRow>
                   <DataRow label="Student code">{student.student_code}</DataRow>
                   <DataRow label="Class">{student.class_name}</DataRow>
                   <DataRow label="Teacher">
@@ -79,7 +79,7 @@ export default function FamilyReportCard() {
 
               <div className="mb-5 grid gap-5 sm:grid-cols-[auto_1fr]">
                 <div className="flex justify-center">
-                  <OverallAttainment overall={overall} />
+                  <OverallProgress overall={overall} />
                 </div>
                 <div>
                   <p className="mb-2 text-[0.8rem] font-semibold" style={{ color: 'var(--text-strong)' }}>
@@ -101,7 +101,7 @@ export default function FamilyReportCard() {
               </div>
 
               <SectionHeading
-                title="Attainment by strand"
+                title="Progress by subject"
                 description="Each teacher's judgement against the term's standard."
                 action={<MasteryScaleLegend className="print:hidden" />}
               />
@@ -118,7 +118,7 @@ export default function FamilyReportCard() {
               <div className="mt-6 border-t pt-4 text-[0.75rem]" style={{ color: 'var(--text-muted)' }}>
                 <p>
                   Generated {longDate(new Date().toISOString().slice(0, 10))} from the ICF Maktab Tracker.
-                  Attainment is recorded against the observable indicators in the An-Nasīḥah syllabus for
+                  Progress is recorded against the observable indicators in the An-Nasīḥah syllabus for
                   Grade {student.grade}.
                 </p>
                 <p className="mt-2 hidden print:block">

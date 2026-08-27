@@ -27,7 +27,7 @@ export default function TeacherMessages() {
         eyebrow="Communication"
         title="Parent messages"
         description="One conversation per family, per child. Families reply from their own portal."
-        emptyDescription="Start a conversation from a pupil's page, or with the button above."
+        emptyDescription="Start a conversation from a student's page, or with the button above."
         adapter={adapter}
         actions={(
           <Button variant="primary" icon={<Plus size={15} />} onClick={() => setComposing(true)}>
@@ -67,7 +67,7 @@ function ComposeDialog({ classId, onClose }) {
       open
       onClose={onClose}
       title="New message"
-      description="Choose a pupil's guardian. Existing conversations continue rather than duplicating."
+      description="Choose a student's guardian. Existing conversations continue rather than duplicating."
       footer={(
         <>
           <Button variant="secondary" onClick={onClose} disabled={send.busy}>Cancel</Button>
@@ -84,7 +84,7 @@ function ComposeDialog({ classId, onClose }) {
       )}
     >
       <div className="space-y-3">
-        <Field label="Send to" required hint="Guardians linked to pupils in your class.">
+        <Field label="Send to" required hint="Guardians linked to students in your class.">
           <Select value={contactKey} onChange={(e) => setContactKey(e.target.value)}>
             <option value="">Choose a guardian…</option>
             {rows.map((row) => (

@@ -1,8 +1,8 @@
 /**
- * The pacing radar: every class, every strand, in one grid.
+ * The pacing radar: every class, every subject, in one grid.
  *
  * Two views because they answer different questions — "who is behind?" (the
- * class list) and "which strand slipped this week?" (the weekly matrix).
+ * class list) and "which subject slipped this week?" (the weekly matrix).
  */
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -37,7 +37,7 @@ function DayCell({ day }) {
         color: `var(--${tone}-ink)`,
         opacity: isFuture ? 0.45 : 1,
       }}
-      title={`${day.dayName} ${mediumDate(day.date)} — ${day.expectedSubject || 'no strand'}: ${
+      title={`${day.dayName} ${mediumDate(day.date)} — ${day.expectedSubject || 'no subject'}: ${
         isFuture ? 'upcoming' : config.label}${day.log ? ` (${day.log.teacher_name})` : ''}`}
     >
       <Icon size={14} strokeWidth={2.6} />
@@ -71,7 +71,7 @@ export default function AdminPacing() {
             options={[
               { value: 'classes', label: 'By class' },
               { value: 'week', label: 'This week' },
-              { value: 'strands', label: 'By strand' },
+              { value: 'subjects', label: 'By subject' },
             ]}
           />
         )}
@@ -100,7 +100,7 @@ export default function AdminPacing() {
 
               {view === 'classes' && <ClassView rows={rows} />}
               {view === 'week' && <WeekView rows={rows} weekOf={data.weekOf} />}
-              {view === 'strands' && <StrandView rows={rows} />}
+              {view === 'subjects' && <SubjectView rows={rows} />}
 
               <Card className="mt-5">
                 <SectionHeading title="Reading this screen" />
@@ -109,7 +109,7 @@ export default function AdminPacing() {
                     <dt className="font-semibold" style={{ color: 'var(--text-strong)' }}>Progress</dt>
                     <dd style={{ color: 'var(--text-muted)' }}>
                       Standards achieved in full, with half credit for a standard currently being
-                      taught. Each of the five strands is taught across the whole term, so a class
+                      taught. Each of the five subjects is taught across the whole term, so a class
                       can be on pace with none finished yet.
                     </dd>
                   </div>
@@ -121,7 +121,7 @@ export default function AdminPacing() {
                     </dd>
                   </div>
                   <div>
-                    <dt className="font-semibold" style={{ color: 'var(--text-strong)' }}>Check-offs</dt>
+                    <dt className="font-semibold" style={{ color: 'var(--text-strong)' }}>Daily logs</dt>
                     <dd style={{ color: 'var(--text-muted)' }}>
                       Daily records kept against teaching days that have passed. A class teaching
                       well but not checking off is flagged on this alone — the office cannot see
@@ -147,7 +147,7 @@ function ClassView({ rows }) {
             <tr>
               <Th>Class</Th>
               <Th>Teacher</Th>
-              <Th align="center">Pupils</Th>
+              <Th align="center">Students</Th>
               <Th align="center">Status</Th>
               <Th>Progress vs expected</Th>
               <Th align="center">Standards</Th>
@@ -207,8 +207,8 @@ function WeekView({ rows, weekOf }) {
   return (
     <Card>
       <SectionHeading
-        title="Five-strand weekly matrix"
-        description={`Week beginning ${mediumDate(weekOf)}. One strand per weekday — a gap means no check-off was recorded.`}
+        title="The week at a glance"
+        description={`Week beginning ${mediumDate(weekOf)}. One subject per weekday — a gap means no daily log was recorded.`}
       />
       <TableWrap>
         <Table>
@@ -265,9 +265,9 @@ function WeekView({ rows, weekOf }) {
   );
 }
 
-/** Coverage of each of the five strands, across all classes. */
-function StrandView({ rows }) {
-  const byStrand = useMemo(() => {
+/** Coverage of each of the five subjects, across all classes. */
+function SubjectView({ rows }) {
+  const bySubject = useMemo(() => {
     const map = new Map();
     for (const row of rows) {
       for (const day of row.week) {
@@ -281,21 +281,21 @@ function StrandView({ rows }) {
     return [...map.values()];
   }, [rows]);
 
-  if (!byStrand.length) {
-    return <EmptyState title="No strand data for this week" description="The weekly matrix fills in as lessons are logged." />;
+  if (!bySubject.length) {
+    return <EmptyState title="No subject data for this week" description="The weekly matrix fills in as lessons are logged." />;
   }
 
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      {byStrand.map((strand) => {
-        const share = strand.expected ? Math.round((strand.logged / strand.expected) * 100) : 0;
+      {bySubject.map((subject) => {
+        const share = subject.expected ? Math.round((subject.logged / subject.expected) * 100) : 0;
         return (
-          <Card key={strand.subject}>
+          <Card key={subject.subject}>
             <p className="term text-[0.92rem] font-semibold" style={{ color: 'var(--text-strong)' }}>
-              {strand.subject}
+              {subject.subject}
             </p>
             <p className="mb-3 text-[0.76rem]" style={{ color: 'var(--text-muted)' }}>
-              {strand.logged} of {strand.expected} class sessions logged this week
+              {subject.logged} of {subject.expected} class sessions logged this week
             </p>
             <PacingBar value={share} expected={null} tone={share >= 90 ? 'ok' : share >= 70 ? 'warn' : 'risk'} />
             <p className="num mt-2 text-2xl font-semibold" style={{ color: 'var(--text-strong)' }}>{share}%</p>

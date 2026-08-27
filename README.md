@@ -5,8 +5,8 @@ the An-Nasīḥah syllabus for **2026–2027**. Three portals over one database:
 
 | Portal | Who it is for | What they see |
 | :--- | :--- | :--- |
-| **Administration** | Maktab Director, standards coordinator | Everything. Pacing across every grade, classes and the roll, staff and family accounts, the curriculum, reports and the board digest |
-| **Teacher** | Class teachers, assistants, substitutes | Only the classes they are assigned to: the daily check-off, the attendance register, their pupils' progress, homework, parent messages |
+| **Administration** | Maktab Director, standards coordinator | Everything. Pacing across every grade, classes and the class list, staff and family accounts, the curriculum, reports and the board digest |
+| **Teacher** | Class teachers, assistants, substitutes | Only the classes they are assigned to: the daily log, the attendance, their students' progress, homework, parent messages |
 | **Family** | Parents and guardians | Only their own children: progress, attendance, and the teacher's comments |
 
 ### What each role can do
@@ -15,22 +15,22 @@ Each portal is deliberately short — four items in the sidebar, because each ro
 really has four jobs.
 
 **Administration** is the only role that can change how the school is set up:
-create classes and place pupils, **assign teachers to grades** (creating a
+create classes and place students, **assign teachers to grades** (creating a
 teacher's account in the same step if they are new), link guardians to children,
 **edit the curriculum**, move the active term, post notices, and read every
 report. The dashboard opens with a *Needs setting up* panel naming any class
-with no teacher, pupil with no class, or child with no guardian linked — the
+with no teacher, student with no class, or child with no guardian linked — the
 states where the system quietly stops working for somebody.
 
 **Teachers** are scoped to their own classes and nothing else, enforced on the
-server on every request. *Today's check-off* comes pre-filled from the
-curriculum, the *Attendance register* starts everyone as present so only the
-exceptions need marking, and *My class* holds their pupils, the syllabus and
-homework behind three tabs. Notices from the office appear on the check-off
+server on every request. *Today's lesson* comes pre-filled from the
+curriculum, the *Attendance* starts everyone as present so only the
+exceptions need marking, and *My class* holds their students, the syllabus and
+homework behind three tabs. Notices from the office appear on the daily log
 screen, where they will actually be read.
 
 **Families** see attendance, progress, and what the teacher has written. *What
-the teacher says* sits second on the page, quoting each strand's remark, because
+the teacher says* sits second on the page, quoting each subject's remark, because
 that is what parents come looking for. Memorization, lessons covered and
 homework are sections of the same page rather than competing nav items.
 
@@ -67,7 +67,7 @@ Teachers can sign in with a short numeric PIN instead of a password, which
 matters on a phone between classes.
 
 > **Before the real rollout:** set `DEMO_MODE=false` so the seeded account list
-> stops being advertised, set `JWT_SECRET`, and reseed with your own roll.
+> stops being advertised, set `JWT_SECRET`, and reseed with your own class list.
 
 ---
 
@@ -75,9 +75,9 @@ matters on a phone between classes.
 
 ### The weekly pattern
 
-One strand per teaching day, with the mid-year switches built in:
+One subject per teaching day, with the mid-year switches built in:
 
-| Day | Strand |
+| Day | Subject |
 | :--- | :--- |
 | Monday | Fiqh |
 | Tuesday | Aḥādīth |
@@ -114,7 +114,7 @@ term that needs filling — add the standard and the banner clears.
 
 ### How pacing is judged
 
-A term holds five standards, one per strand, each taught across roughly nine
+A term holds five standards, one per subject, each taught across roughly nine
 weeks. So "standards completed" on its own says almost nothing in week three.
 Pacing therefore combines two independent signals and reports the worse:
 
@@ -122,7 +122,7 @@ Pacing therefore combines two independent signals and reports the worse:
    standard currently being taught, measured against how much of the term has
    elapsed. A class 40% through the term is expected to be roughly 40% through
    its standards.
-2. **Logging discipline** — daily check-offs recorded against teaching days that
+2. **Logging discipline** — daily logs recorded against teaching days that
    have passed. A class can be teaching well and still be invisible to the
    office if nobody checks off; that is worth flagging on its own.
 
@@ -174,9 +174,9 @@ scripts/              Demo capture, page build and verification
 ### Data model
 
 Classes and students are **archived, never deleted**, so previous years' lesson
-logs, registers and reports stay intact and auditable. `attendance`,
+logs, attendance records and reports stay intact and auditable. `attendance`,
 `assessments` and `memorization_progress` carry uniqueness constraints, so
-re-submitting a register or an assessment corrects the record in place instead
+re-submitting a attendance or an assessment corrects the record in place instead
 of creating a duplicate.
 
 ---
@@ -303,7 +303,7 @@ is untouched.
 
 For a pilot where testers sign themselves in, keep `DEMO_MODE=true` as above so
 the account list stays on the sign-in screen. Set it to `false` — and reseed
-with your own roll — once real families are using it.
+with your own class list — once real families are using it.
 
 ### Building it yourself
 
@@ -372,7 +372,7 @@ work correctly behind TLS termination.
 
 ## Backups
 
-The entire record — curriculum, roll, registers, assessments, reports — is one
+The entire record — curriculum, class list, attendance records, assessments, reports — is one
 SQLite file. Writes are atomic (rendered to a temp file and renamed), so a
 copy taken at any moment is consistent.
 

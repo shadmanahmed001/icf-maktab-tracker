@@ -83,10 +83,10 @@ function BoardDigest() {
                 <tr>
                   <Th>Class</Th>
                   <Th>Teacher</Th>
-                  <Th align="center">Pupils</Th>
+                  <Th align="center">Students</Th>
                   <Th align="center">Standards</Th>
                   <Th align="center">Progress</Th>
-                  <Th align="center">Check-offs</Th>
+                  <Th align="center">Daily logs</Th>
                   <Th align="center">Attendance</Th>
                   <Th align="center">Status</Th>
                   <Th>Next standard to teach</Th>
@@ -160,7 +160,7 @@ function BoardDigest() {
               <p className="mt-2 text-[0.75rem] leading-relaxed" style={{ color: 'var(--text-muted)' }}>
                 Progress counts standards achieved in full, with half credit for a standard
                 currently being taught — which is why a class can read 0 of 5 achieved and still
-                be on pace in week three. Check-offs count the daily records kept this week.
+                be on pace in week three. Daily logs count the daily records kept this week.
               </p>
             </div>
           </div>
@@ -236,17 +236,17 @@ function AttendanceReport() {
 
           <Card>
             <SectionHeading
-              title="Pupils to follow up"
+              title="Students to follow up"
               description="Two or more unexplained absences in this range. Excused absences are not counted."
             />
             {data.concerns.length === 0 ? (
-              <EmptyState title="No attendance concerns" description="No pupil has two or more unexplained absences in this range." />
+              <EmptyState title="No attendance concerns" description="No student has two or more unexplained absences in this range." />
             ) : (
               <TableWrap>
                 <Table>
                   <thead>
                     <tr>
-                      <Th>Pupil</Th>
+                      <Th>Student</Th>
                       <Th>Class</Th>
                       <Th align="center">Absences</Th>
                       <Th align="center">Late arrivals</Th>

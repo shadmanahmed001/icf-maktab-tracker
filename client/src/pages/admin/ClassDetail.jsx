@@ -1,4 +1,4 @@
-/** One class in depth: pacing, the week, the syllabus and the roll. */
+/** One class in depth: pacing, the week, the syllabus and the class list. */
 import { Link, useParams } from 'react-router-dom';
 import { ArrowLeft, Check, Clock, Minus } from 'lucide-react';
 import { api } from '../../lib/api';
@@ -37,7 +37,7 @@ export default function AdminClassDetail() {
                 title={cls.name}
                 description={[
                   cls.room,
-                  `${cls.student_count} pupils`,
+                  `${cls.student_count} students`,
                   cls.teachers.map((t) => t.full_name).join(', ') || 'No teacher assigned',
                 ].filter(Boolean).join(' · ')}
                 actions={<Badge tone={PACING[progress.pacingStatus].tone}>{PACING[progress.pacingStatus].label}</Badge>}
@@ -55,7 +55,7 @@ export default function AdminClassDetail() {
                   )}
                 >
                   Until someone is assigned, nobody can record this class&rsquo;s lessons or take its
-                  register, and it will keep showing as behind pace.
+                  attendance, and it will keep showing as behind pace.
                 </Alert>
               )}
 
@@ -72,7 +72,7 @@ export default function AdminClassDetail() {
 
                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
                   <StatTile label="Standards achieved" value={`${progress.achievedCount}/${progress.requiredCount}`} sublabel={`${progress.inProgressCount} being taught`} />
-                  <StatTile label="Check-offs logged" value={`${progress.loggedSessions}/${progress.expectedSessions}`} sublabel={`${progress.loggingPercent}% of sessions`} tone={progress.loggingPercent < 80 ? 'warn' : 'ok'} />
+                  <StatTile label="Daily logs logged" value={`${progress.loggedSessions}/${progress.expectedSessions}`} sublabel={`${progress.loggingPercent}% of sessions`} tone={progress.loggingPercent < 80 ? 'warn' : 'ok'} />
                   <StatTile label="Attendance" value={percent(attendance.rate)} sublabel={`${attendance.absent} absences`} tone="info" />
                   <StatTile label="Last logged" value={progress.lastLoggedDate ? relativeDay(progress.lastLoggedDate) : '—'} sublabel={progress.lastLoggedDate ? mediumDate(progress.lastLoggedDate) : 'no records'} />
                 </div>
@@ -81,7 +81,7 @@ export default function AdminClassDetail() {
               <div className="grid gap-5 lg:grid-cols-2">
                 {/* Weekly matrix */}
                 <Card>
-                  <SectionHeading title="This week" description="One strand per weekday." />
+                  <SectionHeading title="This week" description="One subject per weekday." />
                   <ul className="space-y-1.5">
                     {week.map((day) => {
                       const config = {
@@ -116,7 +116,7 @@ export default function AdminClassDetail() {
                 <Card>
                   <SectionHeading
                     title="Term syllabus"
-                    description="Each strand's standard, and how far the class has got with it."
+                    description="Each subject's standard, and how far the class has got with it."
                   />
                   <ul className="space-y-2.5">
                     {progress.coverage.map((topic) => {
@@ -172,20 +172,20 @@ export default function AdminClassDetail() {
                 </Card>
               </div>
 
-              {/* Roll */}
+              {/* Class list */}
               <Card className="mt-5">
                 <SectionHeading
-                  title={`Roll — ${roster.length} pupils`}
+                  title={`Class list — ${roster.length} students`}
                   description="Attendance shown for today."
                 />
                 {roster.length === 0 ? (
-                  <EmptyState title="No pupils enrolled" description="Add students to this class from the Students screen." />
+                  <EmptyState title="No students enrolled" description="Add students to this class from the Students screen." />
                 ) : (
                   <TableWrap>
                     <Table>
                       <thead>
                         <tr>
-                          <Th>Pupil</Th>
+                          <Th>Student</Th>
                           <Th>Code</Th>
                           <Th align="center">Today</Th>
                           <Th align="right">Enrolled</Th>
@@ -229,7 +229,7 @@ export default function AdminClassDetail() {
                       <thead>
                         <tr>
                           <Th>Date</Th>
-                          <Th>Strand</Th>
+                          <Th>Subject</Th>
                           <Th>Topic</Th>
                           <Th>Session</Th>
                           <Th align="center">Status</Th>

@@ -33,7 +33,7 @@ export default function AdminDashboard() {
               title={`Assalāmu ʿalaykum${data.dayName ? `, it's ${data.dayName}` : ''}`}
               description={
                 data.expectedSubject
-                  ? `Today's strand across the maktab is ${data.expectedSubject}. ${longDate(data.today)}.`
+                  ? `Today's subject across the maktab is ${data.expectedSubject}. ${longDate(data.today)}.`
                   : `${longDate(data.today)} is not a teaching day.`
               }
               actions={(
@@ -79,10 +79,10 @@ export default function AdminDashboard() {
             <SetupGaps setup={data.setup} />
 
             <div className="grid gap-5 lg:grid-cols-3">
-              {/* Today's outstanding check-offs */}
+              {/* Today's outstanding daily logs */}
               <Card className="lg:col-span-2">
                 <SectionHeading
-                  title="Today's check-off"
+                  title="Today's lesson"
                   description={
                     data.expectedSubject
                       ? `${stats.classes - missingToday.length} of ${stats.classes} classes have recorded today's lesson.`
@@ -136,11 +136,11 @@ export default function AdminDashboard() {
               <Card>
                 <SectionHeading
                   title="Attendance today"
-                  description={attendanceToday.recorded ? `${attendanceToday.recorded} pupils marked` : 'Not yet taken'}
+                  description={attendanceToday.recorded ? `${attendanceToday.recorded} students marked` : 'Not yet taken'}
                 />
                 {attendanceToday.recorded === 0 ? (
                   <p className="py-6 text-center text-[0.82rem]" style={{ color: 'var(--text-muted)' }}>
-                    No register has been taken yet today.
+                    No attendance has been taken yet today.
                   </p>
                 ) : (
                   <>
@@ -185,7 +185,7 @@ export default function AdminDashboard() {
                         <Th>Teacher</Th>
                         <Th align="center">Status</Th>
                         <Th>Progress vs expected</Th>
-                        <Th align="center">Check-offs</Th>
+                        <Th align="center">Daily logs</Th>
                         <Th>Next standard</Th>
                       </tr>
                     </thead>
@@ -275,7 +275,7 @@ export default function AdminDashboard() {
 
 /**
  * The states in which the system quietly stops working for somebody: a class
- * nobody can record, a pupil on no register, a family with no way in. Shown
+ * nobody can record, a student on no attendance, a family with no way in. Shown
  * only when there is something to act on, so a configured school sees nothing.
  */
 function SetupGaps({ setup }) {
@@ -289,22 +289,22 @@ function SetupGaps({ setup }) {
       title: 'classes have no teacher assigned',
       detail: setup.classesWithoutTeacher.map((c) => c.name).join(', '),
       action: { to: '/admin/classes', label: 'Assign teachers' },
-      why: 'Nobody can record their lessons or take their register.',
+      why: 'Nobody can record their lessons or take their attendance.',
     },
     {
       key: 'class',
       tone: 'warn',
       count: setup.studentsWithoutClass.length,
-      title: 'pupils are not in a class',
+      title: 'students are not in a class',
       detail: setup.studentsWithoutClass.map((s) => `${s.first_name} ${s.last_name}`).join(', '),
-      action: { to: '/admin/students', label: 'Place pupils' },
-      why: 'They will not appear on any register.',
+      action: { to: '/admin/students', label: 'Place students' },
+      why: 'They will not appear on any attendance.',
     },
     {
       key: 'guardian',
       tone: 'warn',
       count: setup.studentsWithoutGuardian.length,
-      title: 'pupils have no guardian linked',
+      title: 'students have no guardian linked',
       detail: setup.studentsWithoutGuardian
         .map((s) => `${s.first_name} ${s.last_name}`).slice(0, 8).join(', '),
       action: { to: '/admin/students', label: 'Link guardians' },

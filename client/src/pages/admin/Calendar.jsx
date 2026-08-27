@@ -118,8 +118,8 @@ export default function AdminCalendar() {
                 Each class is compared against how much of the active term has elapsed. A class 40% of
                 the way through the term is expected to have covered roughly 40% of its standards, with
                 half credit for a standard currently being taught. Separately, the number of daily
-                check-offs recorded is compared against the teaching days that have passed — a class
-                can be teaching perfectly well and still be flagged if nobody is completing the register.
+                daily logs recorded is compared against the teaching days that have passed — a class
+                can be teaching perfectly well and still be flagged if nobody is completing the attendance.
                 The radar reports whichever of the two signals is worse.
               </p>
             </Card>

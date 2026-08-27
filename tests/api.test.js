@@ -289,10 +289,10 @@ test('teacher home lists only their own classes', async () => {
   assert.equal(res.status, 200);
   assert.equal(res.body.data.classes.length, 1);
   assert.equal(res.body.data.classes[0].class.name, 'Grade 1 Boys');
-  assert.ok(res.body.data.expectedSubject, 'the expected strand for today should be resolved');
+  assert.ok(res.body.data.expectedSubject, 'the expected subject for today should be resolved');
 });
 
-test('teacher check-off screen suggests the next uncovered standard', async () => {
+test('teacher daily log screen suggests the next uncovered standard', async () => {
   const { client, classes } = await teacherClient();
   const res = await client.get(`/api/teacher/classes/${classes[0].id}/today`);
   assert.equal(res.status, 200);
@@ -301,10 +301,10 @@ test('teacher check-off screen suggests the next uncovered standard', async () =
   assert.ok(d.suggestedTopic, 'a standard should be suggested');
   assert.ok(d.roster.length > 0, 'the roster should be populated');
   assert.ok(d.memorizationStandard, 'the term memorization target should be present');
-  assert.equal(d.coverage.length, 5, 'five strands per term');
+  assert.equal(d.coverage.length, 5, 'five subjects per term');
 });
 
-test('the check-off endpoint returns every progress field the screen renders', async () => {
+test('the daily log endpoint returns every progress field the screen renders', async () => {
   const { client, classes } = await teacherClient();
   const res = await client.get(`/api/teacher/classes/${classes[0].id}/today`);
   assert.equal(res.status, 200);
@@ -362,7 +362,7 @@ test('logging a lesson updates coverage and re-saving the same day does not doub
   const covered = after.body.data.coverage.find((t) => t.id === topic.id);
   assert.equal(covered.state, 'achieved', 'a mastered completed log achieves the standard');
 
-  // Saving again for the same class, date and strand must update in place.
+  // Saving again for the same class, date and subject must update in place.
   const logsBefore = (await client.get(`/api/teacher/classes/${classId}/logs`)).body.data.length;
   const second = await client.post('/api/teacher/lesson-logs', {
     class_id: classId,

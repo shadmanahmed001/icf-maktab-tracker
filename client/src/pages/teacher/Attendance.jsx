@@ -1,7 +1,7 @@
 /**
- * The register. Optimised for speed: every pupil defaults to present, so a
+ * The attendance. Optimised for speed: every student defaults to present, so a
  * normal day is "mark the two absences and save". A row of tap targets per
- * pupil beats a dropdown on a phone.
+ * student beats a dropdown on a phone.
  */
 import { useEffect, useState } from 'react';
 import { Check, Clock, X, ShieldQuestion, Save, Users } from 'lucide-react';
@@ -46,7 +46,7 @@ export default function TeacherAttendance() {
               value={date}
               max={todayISO()}
               onChange={(e) => setDate(e.target.value)}
-              aria-label="Register date"
+              aria-label="Attendance date"
             />
           </Field>
         )}
@@ -54,7 +54,7 @@ export default function TeacherAttendance() {
 
       <AsyncSection query={query} rows={6}>
         {(data) => (
-          <RegisterScreen
+          <AttendanceScreen
             key={`${selectedId}-${date}`}
             data={data}
             classId={selectedId}
@@ -67,10 +67,10 @@ export default function TeacherAttendance() {
   );
 }
 
-function RegisterScreen({ data, classId, date, onSaved }) {
+function AttendanceScreen({ data, classId, date, onSaved }) {
   const { roster, summary, history } = data;
 
-  // Local draft: pupils with no record default to present.
+  // Local draft: students with no record default to present.
   const [draft, setDraft] = useState({});
   const [noteFor, setNoteFor] = useState(null);
   const [dirty, setDirty] = useState(false);
@@ -124,7 +124,7 @@ function RegisterScreen({ data, classId, date, onSaved }) {
       })),
     }),
     {
-      onSuccess: () => { toast('Register saved'); setDirty(false); onSaved(); },
+      onSuccess: () => { toast('Attendance saved'); setDirty(false); onSaved(); },
     }
   );
 
@@ -134,7 +134,7 @@ function RegisterScreen({ data, classId, date, onSaved }) {
   }, {});
 
   if (roster.length === 0) {
-    return <EmptyState title="No pupils in this class" description="Ask the office to enrol pupils into this class." />;
+    return <EmptyState title="No students in this class" description="Ask the office to enrol students into this class." />;
   }
 
   return (
@@ -166,14 +166,14 @@ function RegisterScreen({ data, classId, date, onSaved }) {
           icon={<Save size={15} />}
           onClick={() => save.run().catch(() => {})}
         >
-          {alreadyRecorded ? 'Save changes' : 'Save register'}
+          {alreadyRecorded ? 'Save changes' : 'Save attendance'}
         </Button>
       </div>
 
       {save.error && <Alert tone="risk" className="mb-4">{save.error.message}</Alert>}
       {alreadyRecorded && !dirty && (
         <Alert tone="ok" className="mb-4">
-          The register for {mediumDate(date)} is saved. Change any pupil below to correct it.
+          The attendance for {mediumDate(date)} is saved. Change any student below to correct it.
         </Alert>
       )}
 
@@ -285,7 +285,7 @@ function NoteDialog({ student, entry, onClose, onSave }) {
       open
       onClose={onClose}
       title={`${student.first_name} ${student.last_name}`}
-      description="Notes are visible to the office and to this pupil's guardians."
+      description="Notes are visible to the office and to this student's guardians."
       size="sm"
       footer={(
         <>
