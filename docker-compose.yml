@@ -1,0 +1,16 @@
+services:
+  maktab-tracker:
+    build: .
+    container_name: icf-maktab-tracker
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - NODE_ENV=production
+      - DB_PATH=/app/data/maktab.db
+    volumes:
+      - maktab_data:/app/data
+
+volumes:
+  maktab_data:
