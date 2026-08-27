@@ -244,9 +244,20 @@ page there is **no server behind it**, so anything a reviewer types is kept in
 their own browser for that visit and then gone. That is the right trade for
 gathering feedback on the design and the workflow; it is not a pilot.
 
-The workflow enables Pages itself on the first run, so there is nothing to
-switch on. One caveat: a repository has a single Pages site, so whichever branch
-pushed last is what the link serves.
+**One setting has to be switched on once, by a repository owner** — GitHub
+refuses to let a workflow create a Pages site for itself:
+
+1. **Settings → Pages**
+2. **Build and deployment → Source → GitHub Actions**
+3. Re-run the Deploy workflow
+
+Every later push then publishes automatically. Until it is switched on, the
+workflow still builds and verifies the page and attaches it to the run as the
+**maktab-demo-page** artifact, so the demo is always obtainable — download it
+and open it, or drop it on any static host.
+
+One caveat: a repository has a single Pages site, so whichever branch pushed
+last is what the link serves.
 
 ### 2. A real server for a pilot — container image
 

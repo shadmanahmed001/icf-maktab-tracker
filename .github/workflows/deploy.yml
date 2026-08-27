@@ -107,15 +107,58 @@ jobs:
       # `enablement` turns Pages on for the repository if it is off, using the
       # workflow's own pages:write permission — so the first run needs no visit
       # to the repository settings.
-      - uses: actions/configure-pages@v5
+      # Always keep the built page as a downloadable artifact, so the demo is
+      # obtainable from a run even when Pages is not turned on.
+      - name: Upload the page as a build artifact
+        uses: actions/upload-artifact@v4
         with:
-          enablement: true
+          name: maktab-demo-page
+          path: site/index.html
+          if-no-files-found: error
 
-      - uses: actions/upload-pages-artifact@v3
+      # Whether Pages is switched on is a repository setting that only an owner
+      # can change — the workflow token is refused ("Resource not accessible by
+      # integration"). So check first and say what to click, rather than failing
+      # the run on every push with an error that looks like a build problem.
+      - name: Is GitHub Pages switched on?
+        id: pages_state
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          code=$(curl -s -o /dev/null -w '%{http_code}' \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ github.repository }}/pages")
+          if [ "$code" = "200" ]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+            echo "Pages is enabled; publishing."
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            {
+              echo "### Demo built, but GitHub Pages is not switched on"
+              echo
+              echo "The page is attached to this run as the **maktab-demo-page** artifact."
+              echo "To publish it at a public URL, one repository owner needs to do this once:"
+              echo
+              echo "1. Open **Settings → Pages**"
+              echo "2. Under **Build and deployment → Source**, choose **GitHub Actions**"
+              echo "3. Re-run this workflow"
+              echo
+              echo "Every later push then publishes automatically."
+            } >> "$GITHUB_STEP_SUMMARY"
+            echo "::warning title=Pages not enabled::Settings → Pages → Source: GitHub Actions, then re-run. The built page is attached as an artifact."
+          fi
+
+      - if: steps.pages_state.outputs.enabled == 'true'
+        uses: actions/configure-pages@v5
+
+      - if: steps.pages_state.outputs.enabled == 'true'
+        uses: actions/upload-pages-artifact@v3
         with:
           path: site
 
       - id: deploy
+        if: steps.pages_state.outputs.enabled == 'true'
         uses: actions/deploy-pages@v4
 
   image:
