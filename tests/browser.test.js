@@ -150,18 +150,19 @@ const ADMIN_STEPS = [
 ];
 
 const TEACHER_STEPS = [
-  { path: '/teacher', name: 'checkoff', expect: ['check-off', 'Where the class stands', 'Memorization target'] },
+  { path: '/teacher', name: 'checkoff', expect: ['check-off', 'Where the class stands', 'Memorization target', 'From the office'] },
   { path: '/teacher/attendance', name: 'attendance', expect: ['Attendance', 'All present'] },
-  { path: '/teacher/roster', name: 'roster', expect: ['Students & progress'] },
-  { path: '/teacher/coverage', name: 'coverage', expect: ['Syllabus coverage', 'The five strands'] },
-  { path: '/teacher/homework', name: 'homework', expect: ['Homework'] },
+  // Pupils, syllabus and homework are tabs of one "My class" page now.
+  { path: '/teacher/roster', name: 'myclass-pupils', expect: ['My class', 'Pupils & progress'] },
+  { path: '/teacher/roster?tab=syllabus', name: 'myclass-syllabus', expect: ['My class', 'The five strands'] },
+  { path: '/teacher/roster?tab=homework', name: 'myclass-homework', expect: ['My class', 'Set homework'] },
   { path: '/teacher/messages', name: 'messages', expect: ['Parent messages'] },
   { path: '/teacher/notices', name: 'notices', expect: ['Notices'] },
   { path: '/teacher/curriculum', name: 'curriculum', expect: ['Curriculum'] },
 ];
 
 const PARENT_STEPS = [
-  { path: '/family', name: 'overview', expect: ['progress', 'Overall attainment', 'Attendance'] },
+  { path: '/family', name: 'progress', expect: ['is doing', 'What the teacher says', 'Attendance', 'Memorization'] },
   { path: '/family/report', name: 'report-card', expect: ['Report card', 'Attainment by strand'] },
   { path: '/family/memorization', name: 'memorization', expect: ['Memorization'] },
   { path: '/family/lessons', name: 'lessons', expect: ['Lessons covered'] },
@@ -250,7 +251,7 @@ async function runResponsive(browser, base) {
     const drawer = page.locator('aside[aria-label="Portal menu"]');
     assertTrue(await drawer.isVisible(), 'mobile navigation drawer opens');
     assertTrue(
-      await drawer.getByText('Students & progress').isVisible(),
+      await drawer.getByText('My class').isVisible(),
       'drawer lists the portal navigation'
     );
     await page.screenshot({ path: path.join(SHOT_DIR, 'mobile-teacher-drawer.png') });

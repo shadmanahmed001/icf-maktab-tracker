@@ -4,8 +4,8 @@ import { ArrowLeft, Check, Clock, Minus } from 'lucide-react';
 import { api } from '../../lib/api';
 import { useApi } from '../../lib/hooks';
 import {
-  AsyncSection, Badge, Button, Card, DataRow, EmptyState, PageHeader, SectionHeading,
-  Table, TableWrap, Td, Th, Tr,
+  Alert, AsyncSection, Badge, Button, Card, DataRow, EmptyState, PageHeader,
+  SectionHeading, Table, TableWrap, Td, Th, Tr,
 } from '../../ui';
 import { CompositionBar, ProgressRing, StatTile } from '../../charts';
 import {
@@ -42,6 +42,22 @@ export default function AdminClassDetail() {
                 ].filter(Boolean).join(' · ')}
                 actions={<Badge tone={PACING[progress.pacingStatus].tone}>{PACING[progress.pacingStatus].label}</Badge>}
               />
+
+              {cls.teachers.length === 0 && (
+                <Alert
+                  tone="risk"
+                  title="No teacher is assigned to this class"
+                  className="mb-5"
+                  action={(
+                    <Button as={Link} to="/admin/classes" size="sm" variant="secondary">
+                      Assign one
+                    </Button>
+                  )}
+                >
+                  Until someone is assigned, nobody can record this class&rsquo;s lessons or take its
+                  register, and it will keep showing as behind pace.
+                </Alert>
+              )}
 
               <div className="mb-5 grid gap-4 lg:grid-cols-[auto_1fr]">
                 <Card className="flex items-center justify-center">

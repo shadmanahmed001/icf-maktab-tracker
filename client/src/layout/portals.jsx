@@ -11,8 +11,8 @@ import { createContext, useContext, useEffect, useMemo } from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, School, Users, GraduationCap, BookOpen, CalendarDays,
-  Megaphone, FileText, Activity, ClipboardCheck, UserCheck, NotebookPen,
-  MessageSquare, Home, BookMarked, ScrollText, Award,
+  Megaphone, FileText, Activity, ClipboardCheck, UserCheck,
+  MessageSquare, Home, ScrollText, Award,
 } from 'lucide-react';
 import { useAuth } from '../lib/auth';
 import { useApi, useStickyState } from '../lib/hooks';
@@ -146,31 +146,24 @@ export function TeacherPortal() {
 
   const selected = available.find((c) => c.id === selectedId) || null;
 
+  // Four items, in the order a teacher's day runs. Anything that is not part of
+  // the daily job sits under Reference, and notices appear on the check-off
+  // screen rather than as a nav item nobody visits.
   const nav = [
     {
       items: [
         { to: '/teacher', end: true, label: "Today's check-off", icon: ClipboardCheck },
-        { to: '/teacher/attendance', label: 'Attendance', icon: UserCheck },
-      ],
-    },
-    {
-      title: 'My class',
-      items: [
-        { to: '/teacher/roster', label: 'Students & progress', icon: GraduationCap },
-        { to: '/teacher/coverage', label: 'Syllabus coverage', icon: BookMarked },
-        { to: '/teacher/homework', label: 'Homework', icon: NotebookPen },
-      ],
-    },
-    {
-      title: 'Communication',
-      items: [
+        { to: '/teacher/attendance', label: 'Attendance register', icon: UserCheck },
+        { to: '/teacher/roster', label: 'My class', icon: GraduationCap },
         { to: '/teacher/messages', label: 'Parent messages', icon: MessageSquare },
-        { to: '/teacher/notices', label: 'Notices', icon: Megaphone },
       ],
     },
     {
       title: 'Reference',
-      items: [{ to: '/teacher/curriculum', label: 'Curriculum', icon: BookOpen }],
+      items: [
+        { to: '/teacher/curriculum', label: 'Curriculum', icon: BookOpen },
+        { to: '/teacher/notices', label: 'Office notices', icon: Megaphone },
+      ],
     },
   ];
 
@@ -193,10 +186,8 @@ export function TeacherPortal() {
 
   const TITLES = {
     '/teacher': "Today's check-off",
-    '/teacher/attendance': 'Attendance',
-    '/teacher/roster': 'Students & progress',
-    '/teacher/coverage': 'Syllabus coverage',
-    '/teacher/homework': 'Homework',
+    '/teacher/attendance': 'Attendance register',
+    '/teacher/roster': 'My class',
     '/teacher/messages': 'Parent messages',
     '/teacher/notices': 'Notices',
     '/teacher/curriculum': 'Curriculum',
@@ -215,7 +206,7 @@ export function TeacherPortal() {
         bottomNav={[
           { to: '/teacher', end: true, label: 'Check-off', icon: ClipboardCheck },
           { to: '/teacher/attendance', label: 'Register', icon: UserCheck },
-          { to: '/teacher/roster', label: 'Students', icon: GraduationCap },
+          { to: '/teacher/roster', label: 'My class', icon: GraduationCap },
           { to: '/teacher/messages', label: 'Messages', icon: MessageSquare },
         ]}
       >
@@ -290,27 +281,17 @@ export function ParentPortal() {
 
   const selected = available.find((c) => c.id === selectedId) || null;
 
+  // Parents want three things: how their child is doing, whether they have been
+  // attending, and what the teacher has said. Memorization, lessons covered and
+  // homework are all part of "how they are doing", so they are sections of the
+  // progress page reached by a link, not competing nav items.
   const nav = [
     {
       items: [
-        { to: '/family', end: true, label: 'Overview', icon: Home },
-        { to: '/family/report', label: 'Term report card', icon: Award },
-      ],
-    },
-    {
-      title: 'Progress',
-      items: [
-        { to: '/family/memorization', label: 'Memorization', icon: BookMarked },
-        { to: '/family/lessons', label: 'Lessons covered', icon: BookOpen },
+        { to: '/family', end: true, label: 'Progress', icon: Home },
         { to: '/family/attendance', label: 'Attendance', icon: UserCheck },
-        { to: '/family/homework', label: 'Homework', icon: NotebookPen },
-      ],
-    },
-    {
-      title: 'From the maktab',
-      items: [
         { to: '/family/messages', label: 'Messages', icon: MessageSquare },
-        { to: '/family/notices', label: 'Notices', icon: Megaphone },
+        { to: '/family/report', label: 'Term report card', icon: Award },
       ],
     },
   ];
@@ -327,7 +308,7 @@ export function ParentPortal() {
   }
 
   const TITLES = {
-    '/family': 'Overview',
+    '/family': 'Progress',
     '/family/report': 'Term report card',
     '/family/memorization': 'Memorization',
     '/family/lessons': 'Lessons covered',
@@ -348,10 +329,10 @@ export function ParentPortal() {
         title={title}
         subtitle={selected ? `${selected.first_name} ${selected.last_name} · ${selected.class_name || ''}` : undefined}
         bottomNav={[
-          { to: '/family', end: true, label: 'Overview', icon: Home },
-          { to: '/family/memorization', label: 'Ḥifẓ', icon: BookMarked },
-          { to: '/family/attendance', label: 'Register', icon: UserCheck },
+          { to: '/family', end: true, label: 'Progress', icon: Home },
+          { to: '/family/attendance', label: 'Attendance', icon: UserCheck },
           { to: '/family/messages', label: 'Messages', icon: MessageSquare },
+          { to: '/family/report', label: 'Report', icon: Award },
         ]}
       >
         <ChildSwitcher options={available} selectedId={selectedId} onSelect={setStoredId} />

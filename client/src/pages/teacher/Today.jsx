@@ -353,6 +353,8 @@ function CheckOffScreen({ data, date, onDateChange, onSaved, className }) {
             )}
           </Card>
 
+          <OfficeNotices />
+
           {/* Handover notes left by others */}
           {recentHandovers.length > 0 && (
             <Card>
@@ -408,7 +410,7 @@ function CheckOffScreen({ data, date, onDateChange, onSaved, className }) {
                 </span>
               </p>
             </div>
-            <Button as={Link} to="/teacher/coverage" variant="ghost" size="sm" className="mt-3" icon={<ChevronRight size={14} />}>
+            <Button as={Link} to="/teacher/roster?tab=syllabus" variant="ghost" size="sm" className="mt-3" icon={<ChevronRight size={14} />}>
               Full syllabus coverage
             </Button>
           </Card>
@@ -466,5 +468,42 @@ function CheckOffScreen({ data, date, onDateChange, onSaved, className }) {
         </div>
       </div>
     </>
+  );
+}
+
+/**
+ * Notices from the office, on the screen a teacher opens every day. They used
+ * to have their own nav item, which meant nobody read them.
+ */
+function OfficeNotices() {
+  const query = useApi(() => api.announcements({ limit: 3 }), []);
+  const notices = query.data?.announcements || [];
+  if (!notices.length) return null;
+
+  return (
+    <Card>
+      <SectionHeading
+        title="From the office"
+        description="The most recent notices for staff and for your class."
+        action={(
+          <Button as={Link} to="/teacher/notices" variant="ghost" size="sm">All notices</Button>
+        )}
+      />
+      <ul className="space-y-2">
+        {notices.map((notice) => (
+          <li key={notice.id} className="rounded-lg px-3 py-2.5" style={{ background: 'var(--surface-sunken)' }}>
+            <p className="mb-0.5 flex flex-wrap items-center gap-2">
+              <span className="text-[0.84rem] font-semibold" style={{ color: 'var(--text-strong)' }}>
+                {notice.title}
+              </span>
+              {notice.is_pinned === 1 && <Badge tone="accent" size="sm">Pinned</Badge>}
+            </p>
+            <p className="line-clamp-2 text-[0.8rem]" style={{ color: 'var(--text-body)' }}>
+              {notice.body}
+            </p>
+          </li>
+        ))}
+      </ul>
+    </Card>
   );
 }

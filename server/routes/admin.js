@@ -51,6 +51,40 @@ router.get('/dashboard', handler((req, res) => {
       .map((p) => ({ id: p.class.id, name: p.class.name, teachers: p.class.teachers }))
     : [];
 
+  /*
+   * Setup gaps. Running a maktab on this means somebody has to notice the class
+   * with no teacher and the family with no account — those are the states where
+   * the system silently stops working for someone, so they are surfaced rather
+   * than left to be discovered.
+   */
+  const setup = {
+    classesWithoutTeacher: all(
+      `SELECT c.id, c.name FROM classes c
+        WHERE c.is_active = 1
+          AND NOT EXISTS (SELECT 1 FROM class_teachers ct WHERE ct.class_id = c.id)
+        ORDER BY c.grade ASC`
+    ),
+    studentsWithoutClass: all(
+      `SELECT id, first_name, last_name FROM students
+        WHERE is_active = 1 AND class_id IS NULL ORDER BY first_name ASC LIMIT 20`
+    ),
+    studentsWithoutGuardian: all(
+      `SELECT s.id, s.first_name, s.last_name, c.name AS class_name
+         FROM students s LEFT JOIN classes c ON c.id = s.class_id
+        WHERE s.is_active = 1
+          AND NOT EXISTS (SELECT 1 FROM student_guardians sg WHERE sg.student_id = s.id)
+        ORDER BY c.grade ASC, s.first_name ASC LIMIT 20`
+    ),
+    parentsNeverSignedIn: value(
+      `SELECT COUNT(*) FROM users WHERE role = 'parent' AND is_active = 1 AND last_login_at IS NULL`,
+      [], 0
+    ),
+    teachersNeverSignedIn: value(
+      `SELECT COUNT(*) FROM users WHERE role = 'teacher' AND is_active = 1 AND last_login_at IS NULL`,
+      [], 0
+    ),
+  };
+
   const attendanceToday = attendanceSummary({ from: today, to: today });
   const attendanceTerm = attendanceSummary({ from: term.start_date, to: term.end_date });
 
@@ -76,6 +110,7 @@ router.get('/dashboard', handler((req, res) => {
     term,
     terms: getTerms(),
     stats,
+    setup,
     pacing,
     missingToday,
     attendanceToday,

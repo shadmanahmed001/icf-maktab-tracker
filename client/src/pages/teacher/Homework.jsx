@@ -6,14 +6,14 @@ import { useAction, useApi } from '../../lib/hooks';
 import { useSelectedClass } from '../../layout/portals';
 import {
   Alert, AsyncSection, Badge, Button, Card, ConfirmDialog, EmptyState, Field,
-  IconButton, Input, Modal, PageHeader, Select, Textarea, toast,
+  IconButton, Input, Modal, Select, Textarea, toast,
 } from '../../ui';
 import { mediumDate, todayISO } from '../../lib/format';
 
 const SUBJECTS = ['Fiqh', 'Aḥādīth', 'Sīrah', 'Tārīkh', "ʿAqā'id", 'Akhlāq', 'Ādāb', 'Memorization'];
 
-export default function TeacherHomework() {
-  const { selectedId, selected } = useSelectedClass();
+export default function HomeworkPanel() {
+  const { selectedId } = useSelectedClass();
   const query = useApi(() => api.teacher.homework(selectedId), [selectedId], { skip: !selectedId });
 
   const [creating, setCreating] = useState(null);
@@ -31,23 +31,21 @@ export default function TeacherHomework() {
 
   return (
     <>
-      <PageHeader
-        eyebrow={selected?.name}
-        title="Homework"
-        description="What you set here appears in the family portal, so write it for a parent to read."
-        actions={(
-          <Button
-            variant="primary"
-            icon={<Plus size={15} />}
-            onClick={() => setCreating({
-              subject: 'Aḥādīth', title: '', instructions: '',
-              assigned_date: today, due_date: '',
-            })}
-          >
-            Set homework
-          </Button>
-        )}
-      />
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <p className="text-[0.83rem]" style={{ color: 'var(--text-muted)' }}>
+          What you set here appears in the family portal, so write it for a parent to read.
+        </p>
+        <Button
+          variant="primary"
+          icon={<Plus size={15} />}
+          onClick={() => setCreating({
+            subject: 'Aḥādīth', title: '', instructions: '',
+            assigned_date: today, due_date: '',
+          })}
+        >
+          Set homework
+        </Button>
+      </div>
 
       <AsyncSection query={query} rows={4}>
         {(rows) => (rows.length === 0 ? (

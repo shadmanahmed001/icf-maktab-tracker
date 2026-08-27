@@ -76,6 +76,8 @@ export default function AdminDashboard() {
               />
             </div>
 
+            <SetupGaps setup={data.setup} />
+
             <div className="grid gap-5 lg:grid-cols-3">
               {/* Today's outstanding check-offs */}
               <Card className="lg:col-span-2">
@@ -268,5 +270,103 @@ export default function AdminDashboard() {
         );
       }}
     </AsyncSection>
+  );
+}
+
+/**
+ * The states in which the system quietly stops working for somebody: a class
+ * nobody can record, a pupil on no register, a family with no way in. Shown
+ * only when there is something to act on, so a configured school sees nothing.
+ */
+function SetupGaps({ setup }) {
+  if (!setup) return null;
+
+  const gaps = [
+    {
+      key: 'teacher',
+      tone: 'risk',
+      count: setup.classesWithoutTeacher.length,
+      title: 'classes have no teacher assigned',
+      detail: setup.classesWithoutTeacher.map((c) => c.name).join(', '),
+      action: { to: '/admin/classes', label: 'Assign teachers' },
+      why: 'Nobody can record their lessons or take their register.',
+    },
+    {
+      key: 'class',
+      tone: 'warn',
+      count: setup.studentsWithoutClass.length,
+      title: 'pupils are not in a class',
+      detail: setup.studentsWithoutClass.map((s) => `${s.first_name} ${s.last_name}`).join(', '),
+      action: { to: '/admin/students', label: 'Place pupils' },
+      why: 'They will not appear on any register.',
+    },
+    {
+      key: 'guardian',
+      tone: 'warn',
+      count: setup.studentsWithoutGuardian.length,
+      title: 'pupils have no guardian linked',
+      detail: setup.studentsWithoutGuardian
+        .map((s) => `${s.first_name} ${s.last_name}`).slice(0, 8).join(', '),
+      action: { to: '/admin/students', label: 'Link guardians' },
+      why: 'Their family cannot see their progress.',
+    },
+  ].filter((gap) => gap.count > 0);
+
+  const neverSignedIn = setup.teachersNeverSignedIn + setup.parentsNeverSignedIn;
+
+  if (!gaps.length && neverSignedIn === 0) return null;
+
+  return (
+    <Card className="mb-5">
+      <SectionHeading
+        title="Needs setting up"
+        description="Gaps that stop the system working for someone. This section disappears once they are cleared."
+      />
+
+      <ul className="space-y-2">
+        {gaps.map((gap) => (
+          <li
+            key={gap.key}
+            className="flex flex-wrap items-start justify-between gap-3 rounded-lg px-3.5 py-3"
+            style={{ background: `var(--${gap.tone}-soft)` }}
+          >
+            <div className="min-w-0 flex-1">
+              <p className="text-[0.85rem] font-semibold" style={{ color: `var(--${gap.tone}-ink)` }}>
+                {gap.count} {gap.title}
+              </p>
+              <p className="text-[0.79rem]" style={{ color: `var(--${gap.tone}-ink)`, opacity: 0.9 }}>
+                {gap.why} {gap.detail && <span className="opacity-80">— {gap.detail}</span>}
+              </p>
+            </div>
+            <Button as={Link} to={gap.action.to} size="sm" variant="secondary" className="shrink-0">
+              {gap.action.label}
+            </Button>
+          </li>
+        ))}
+
+        {neverSignedIn > 0 && (
+          <li
+            className="flex flex-wrap items-start justify-between gap-3 rounded-lg px-3.5 py-3"
+            style={{ background: 'var(--surface-sunken)' }}
+          >
+            <div className="min-w-0 flex-1">
+              <p className="text-[0.85rem] font-semibold" style={{ color: 'var(--text-strong)' }}>
+                {pluralise(neverSignedIn, 'account has', 'accounts have')} never been used
+              </p>
+              <p className="text-[0.79rem]" style={{ color: 'var(--text-muted)' }}>
+                {[
+                  setup.teachersNeverSignedIn && pluralise(setup.teachersNeverSignedIn, 'staff member'),
+                  setup.parentsNeverSignedIn && pluralise(setup.parentsNeverSignedIn, 'parent'),
+                ].filter(Boolean).join(' and ')}. They may still need their temporary password —
+                you can reissue one at any time.
+              </p>
+            </div>
+            <Button as={Link} to="/admin/people" size="sm" variant="secondary" className="shrink-0">
+              Manage accounts
+            </Button>
+          </li>
+        )}
+      </ul>
+    </Card>
   );
 }

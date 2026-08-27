@@ -6,25 +6,19 @@ import { api } from '../../lib/api';
 import { useApi } from '../../lib/hooks';
 import { useSelectedClass } from '../../layout/portals';
 import {
-  AsyncSection, Badge, Card, EmptyState, PageHeader, SearchInput,
+  AsyncSection, Badge, Card, EmptyState, SearchInput,
   Table, TableWrap, Td, Th, Tr, Avatar,
 } from '../../ui';
 import { BandDistribution } from '../../charts';
-import { percent } from '../../lib/format';
+import { percent, pluralise } from '../../lib/format';
 
-export default function TeacherRoster() {
-  const { selectedId, selected } = useSelectedClass();
+export default function PupilsPanel() {
+  const { selectedId } = useSelectedClass();
   const [search, setSearch] = useState('');
   const query = useApi(() => api.teacher.roster(selectedId), [selectedId], { skip: !selectedId });
 
   return (
     <>
-      <PageHeader
-        eyebrow={selected?.name}
-        title="Students & progress"
-        description="Tap a pupil to record their attainment and memorization, or to message their family."
-      />
-
       <div className="mb-4 max-w-xs">
         <SearchInput value={search} onChange={setSearch} placeholder="Search pupil…" />
       </div>
@@ -67,7 +61,10 @@ export default function TeacherRoster() {
                     Where to look first
                   </p>
                   <ul className="space-y-1.5 text-[0.82rem]" style={{ color: 'var(--text-body)' }}>
-                    <li>{roster.length} pupils on the roll, {assessedTotal} strand assessments recorded.</li>
+                    <li>
+                      {pluralise(roster.length, 'pupil')} on the roll,{' '}
+                      {pluralise(assessedTotal, 'strand assessment')} recorded.
+                    </li>
                     <li>
                       {lowAttendance.length === 0
                         ? 'No pupil is below 85% attendance.'
@@ -75,8 +72,12 @@ export default function TeacherRoster() {
                           lowAttendance.slice(0, 3).map((s) => s.first_name).join(', ')}${lowAttendance.length > 3 ? '…' : ''}`}
                     </li>
                     <li>
-                      {roster.filter((s) => s.memorizedCount === 0).length} pupils have not yet mastered
-                      any memorization item this term.
+                      {(() => {
+                        const none = roster.filter((s) => s.memorizedCount === 0).length;
+                        if (none === 0) return 'Every pupil has mastered at least one memorization item.';
+                        return `${pluralise(none, 'pupil has', 'pupils have')} not yet mastered any `
+                          + 'memorization item this term.';
+                      })()}
                     </li>
                   </ul>
                 </Card>

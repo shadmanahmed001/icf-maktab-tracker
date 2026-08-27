@@ -23,10 +23,8 @@ import AdminActivity from './pages/admin/Activity';
 
 import TeacherToday from './pages/teacher/Today';
 import TeacherAttendance from './pages/teacher/Attendance';
-import TeacherRoster from './pages/teacher/Roster';
+import TeacherMyClass from './pages/teacher/MyClass';
 import TeacherStudent from './pages/teacher/StudentDetail';
-import TeacherCoverage from './pages/teacher/Coverage';
-import TeacherHomework from './pages/teacher/Homework';
 import TeacherMessages from './pages/teacher/Messages';
 import TeacherNotices from './pages/teacher/Notices';
 import TeacherCurriculum from './pages/teacher/Curriculum';
@@ -88,10 +86,12 @@ export default function App({ Router = BrowserRouter }) {
           >
             <Route index element={<TeacherToday />} />
             <Route path="attendance" element={<TeacherAttendance />} />
-            <Route path="roster" element={<TeacherRoster />} />
+            <Route path="roster" element={<TeacherMyClass />} />
             <Route path="roster/:studentId" element={<TeacherStudent />} />
-            <Route path="coverage" element={<TeacherCoverage />} />
-            <Route path="homework" element={<TeacherHomework />} />
+            {/* The syllabus and homework are tabs of "My class" now; keep the
+                old paths pointing at the right tab so existing links hold. */}
+            <Route path="coverage" element={<Navigate to="/teacher/roster?tab=syllabus" replace />} />
+            <Route path="homework" element={<Navigate to="/teacher/roster?tab=homework" replace />} />
             <Route path="messages" element={<TeacherMessages />} />
             <Route path="messages/:threadId" element={<TeacherMessages />} />
             <Route path="notices" element={<TeacherNotices />} />

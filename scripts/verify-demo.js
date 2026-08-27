@@ -35,17 +35,18 @@ const ROUTES = {
     ['#/admin/activity', ['Activity log']],
   ],
   teacher: [
-    ['#/teacher', ['check-off', 'Where the class stands']],
+    ['#/teacher', ['check-off', 'Where the class stands', 'From the office']],
     ['#/teacher/attendance', ['All present']],
-    ['#/teacher/roster', ['Students & progress']],
-    ['#/teacher/coverage', ['The five strands']],
-    ['#/teacher/homework', ['Homework']],
+    // Pupils, the syllabus and homework are tabs of one "My class" page now.
+    ['#/teacher/roster', ['My class', 'Pupils & progress']],
+    ['#/teacher/roster?tab=syllabus', ['My class', 'The five strands']],
+    ['#/teacher/roster?tab=homework', ['My class', 'Set homework']],
     ['#/teacher/messages', ['Parent messages']],
     ['#/teacher/notices', ['Notices']],
     ['#/teacher/curriculum', ['Curriculum']],
   ],
   parent: [
-    ['#/family', ['Overall attainment']],
+    ['#/family', ['is doing', 'What the teacher says', 'Attendance', 'Memorization']],
     ['#/family/report', ['Attainment by strand']],
     ['#/family/memorization', ['Memorization']],
     ['#/family/lessons', ['Lessons covered']],

@@ -3,11 +3,36 @@
 Academic tracking for the Islamic Center of Fremont Daily Maktab, built around
 the An-Nasīḥah syllabus for **2026–2027**. Three portals over one database:
 
-| Portal | Who it is for | What it does |
+| Portal | Who it is for | What they see |
 | :--- | :--- | :--- |
-| **Administration** | Maktab Director, standards coordinator | Pacing across every grade, class and student records, staff and family accounts, curriculum, printable board digest |
-| **Teacher** | Class teachers, assistants, substitutes | The daily check-off, the register, per-pupil attainment and memorization, homework, parent messages |
-| **Family** | Parents and guardians | Their own children only: progress, memorization targets, lessons covered, attendance, homework, term report card, messages |
+| **Administration** | Maktab Director, standards coordinator | Everything. Pacing across every grade, classes and the roll, staff and family accounts, the curriculum, reports and the board digest |
+| **Teacher** | Class teachers, assistants, substitutes | Only the classes they are assigned to: the daily check-off, the attendance register, their pupils' progress, homework, parent messages |
+| **Family** | Parents and guardians | Only their own children: progress, attendance, and the teacher's comments |
+
+### What each role can do
+
+Each portal is deliberately short — four items in the sidebar, because each role
+really has four jobs.
+
+**Administration** is the only role that can change how the school is set up:
+create classes and place pupils, **assign teachers to grades** (creating a
+teacher's account in the same step if they are new), link guardians to children,
+**edit the curriculum**, move the active term, post notices, and read every
+report. The dashboard opens with a *Needs setting up* panel naming any class
+with no teacher, pupil with no class, or child with no guardian linked — the
+states where the system quietly stops working for somebody.
+
+**Teachers** are scoped to their own classes and nothing else, enforced on the
+server on every request. *Today's check-off* comes pre-filled from the
+curriculum, the *Attendance register* starts everyone as present so only the
+exceptions need marking, and *My class* holds their pupils, the syllabus and
+homework behind three tabs. Notices from the office appear on the check-off
+screen, where they will actually be read.
+
+**Families** see attendance, progress, and what the teacher has written. *What
+the teacher says* sits second on the page, quoting each strand's remark, because
+that is what parents come looking for. Memorization, lessons covered and
+homework are sections of the same page rather than competing nav items.
 
 ---
 

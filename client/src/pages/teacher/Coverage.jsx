@@ -4,7 +4,7 @@ import { api } from '../../lib/api';
 import { useApi } from '../../lib/hooks';
 import { useSelectedClass } from '../../layout/portals';
 import {
-  AsyncSection, Badge, Card, DataRow, EmptyState, PageHeader, SectionHeading,
+  AsyncSection, Badge, Card, DataRow, EmptyState, SectionHeading,
   Table, TableWrap, Td, Th, Tr,
 } from '../../ui';
 import { ProgressRing, StatTile } from '../../charts';
@@ -14,19 +14,13 @@ import {
 
 const STATE_ICON = { achieved: Check, in_progress: Clock, pending: Minus };
 
-export default function TeacherCoverage() {
-  const { selectedId, selected } = useSelectedClass();
+export default function SyllabusPanel() {
+  const { selectedId } = useSelectedClass();
   const progress = useApi(() => api.teacher.progress(selectedId), [selectedId], { skip: !selectedId });
   const logs = useApi(() => api.teacher.logs(selectedId, { limit: 60 }), [selectedId], { skip: !selectedId });
 
   return (
     <>
-      <PageHeader
-        eyebrow={selected?.name}
-        title="Syllabus coverage"
-        description="Where each strand stands this term, and every check-off behind it."
-      />
-
       <AsyncSection query={progress} rows={6}>
         {(data) => (
           <>

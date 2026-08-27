@@ -6,7 +6,8 @@ import { api } from '../../lib/api';
 import { useAction, useApi } from '../../lib/hooks';
 import {
   Alert, AsyncSection, Badge, Button, Card, ConfirmDialog, Field, IconButton, Input,
-  Modal, PageHeader, SearchInput, Select, Table, TableWrap, Td, Th, Tr, toast,
+  Modal, PageHeader, SearchInput, SegmentedControl, Select, Table, TableWrap,
+  Td, Th, Tr, toast,
 } from '../../ui';
 import { GENDER_TRACK, mediumDate } from '../../lib/format';
 
@@ -100,7 +101,16 @@ export default function AdminClasses() {
                       <Td>{row.room || '—'}</Td>
                       <Td className="max-w-56">
                         {row.teachers.length === 0
-                          ? <span style={{ color: 'var(--warn-ink)' }}>None assigned</span>
+                          ? (
+                            <Button
+                              size="sm"
+                              variant="soft"
+                              icon={<UserPlus size={14} />}
+                              onClick={() => setStaffing(row)}
+                            >
+                              Assign a teacher
+                            </Button>
+                          )
                           : (
                             <span className="flex flex-wrap gap-1">
                               {row.teachers.map((t) => (
@@ -230,18 +240,59 @@ function ClassForm({ value, onChange, onClose, onSave, busy, error }) {
   );
 }
 
+/**
+ * Staffing a class.
+ *
+ * Assigning a teacher used to require the account to exist already, which meant
+ * leaving this screen, creating it under Staff & families, and coming back. A
+ * new teacher can now be created and assigned in one step, which is how an
+ * administrator actually thinks about it: "put this person on Grade 3".
+ */
 function StaffingDialog({ classRow, teachers, onClose, onChanged }) {
+  const [mode, setMode] = useState('existing');
   const [userId, setUserId] = useState('');
   const [role, setRole] = useState('lead');
+  const [draft, setDraft] = useState({ full_name: '', email: '', pin: '' });
   const [error, setError] = useState(null);
+  const [credential, setCredential] = useState(null);
 
-  const assign = useAction(
+  const assignExisting = useAction(
     () => api.admin.assignTeacher(classRow.id, { user_id: Number(userId), role }),
     {
       onSuccess: () => { toast('Teacher assigned'); setUserId(''); onChanged(); },
       onError: (err) => setError(err.message),
     }
   );
+
+  /** Create the account, then put them straight on this class. */
+  const createAndAssign = useAction(
+    async () => {
+      const created = await api.admin.createUser({
+        full_name: draft.full_name.trim(),
+        email: draft.email.trim(),
+        role: 'teacher',
+        title: `${classRow.name} Teacher`,
+        pin: draft.pin.trim() || undefined,
+      });
+      await api.admin.assignTeacher(classRow.id, { user_id: created.user.id, role });
+      return created;
+    },
+    {
+      onSuccess: (created) => {
+        toast(`${created.user.full_name} added to ${classRow.name}`);
+        setCredential({
+          name: created.user.full_name,
+          email: created.user.email,
+          password: created.temporaryPassword,
+        });
+        setDraft({ full_name: '', email: '', pin: '' });
+        setMode('existing');
+        onChanged();
+      },
+      onError: (err) => setError(err.message),
+    }
+  );
+
   const unassign = useAction((id) => api.admin.unassignTeacher(classRow.id, id), {
     onSuccess: () => { toast('Teacher unassigned'); onChanged(); },
   });
@@ -249,20 +300,41 @@ function StaffingDialog({ classRow, teachers, onClose, onChanged }) {
   if (!classRow) return null;
   const assignedIds = new Set(classRow.teachers.map((t) => t.id));
   const candidates = teachers.filter((t) => !assignedIds.has(t.id));
+  const newTeacherValid = draft.full_name.trim() && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(draft.email.trim());
 
   return (
     <Modal
       open
       onClose={onClose}
       title={`Teachers for ${classRow.name}`}
-      description="A lead teacher owns the daily check-off; assistants and substitutes can also log lessons."
+      description="The lead teacher owns the daily check-off. Assistants and substitutes can also log lessons and take the register."
       footer={<Button variant="secondary" onClick={onClose}>Done</Button>}
     >
       <div className="space-y-4">
+        {/* One-time credential for a teacher just created */}
+        {credential && (
+          <Alert tone="warn" title={`Sign-in details for ${credential.name}`}>
+            <p className="mt-1">
+              Email <strong>{credential.email}</strong>, temporary password{' '}
+              <strong className="num">{credential.password}</strong>.
+            </p>
+            <p className="mt-1 text-[0.78rem] opacity-90">
+              Shown once only — pass it on now. They will be asked to choose their own password.
+            </p>
+          </Alert>
+        )}
+
         <div>
-          <p className="mb-2 text-[0.78rem] font-semibold" style={{ color: 'var(--text-body)' }}>Assigned</p>
+          <p className="mb-2 text-[0.78rem] font-semibold" style={{ color: 'var(--text-body)' }}>
+            Currently assigned
+          </p>
           {classRow.teachers.length === 0 ? (
-            <p className="text-[0.8rem]" style={{ color: 'var(--text-muted)' }}>Nobody is assigned to this class yet.</p>
+            <div
+              className="rounded-lg px-3 py-3 text-[0.82rem]"
+              style={{ background: 'var(--warn-soft)', color: 'var(--warn-ink)' }}
+            >
+              Nobody is assigned to this class yet, so no one can record its lessons or register.
+            </div>
           ) : (
             <ul className="space-y-1.5">
               {classRow.teachers.map((teacher) => (
@@ -292,34 +364,106 @@ function StaffingDialog({ classRow, teachers, onClose, onChanged }) {
         </div>
 
         <div className="space-y-3" style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: '0.9rem' }}>
-          <p className="text-[0.78rem] font-semibold" style={{ color: 'var(--text-body)' }}>Assign someone</p>
-          <div className="grid gap-3 sm:grid-cols-[1fr_auto]">
-            <Field label="Teacher">
-              <Select value={userId} onChange={(e) => setUserId(e.target.value)}>
-                <option value="">Choose a teacher…</option>
-                {candidates.map((t) => (
-                  <option key={t.id} value={t.id}>{t.full_name}</option>
-                ))}
-              </Select>
-            </Field>
-            <Field label="Role">
-              <Select value={role} onChange={(e) => setRole(e.target.value)}>
-                <option value="lead">Lead</option>
-                <option value="assistant">Assistant</option>
-                <option value="substitute">Substitute</option>
-              </Select>
-            </Field>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <p className="text-[0.78rem] font-semibold" style={{ color: 'var(--text-body)' }}>
+              Add a teacher
+            </p>
+            <SegmentedControl
+              ariaLabel="Choose how to add a teacher"
+              size="sm"
+              value={mode}
+              onChange={(next) => { setMode(next); setError(null); }}
+              options={[
+                { value: 'existing', label: 'Existing staff' },
+                { value: 'new', label: 'New teacher' },
+              ]}
+            />
           </div>
-          {error && <Alert tone="risk">{error}</Alert>}
-          <Button
-            variant="primary"
-            disabled={!userId}
-            busy={assign.busy}
-            onClick={() => assign.run().catch(() => {})}
-            icon={<UserPlus size={15} />}
-          >
-            Assign
-          </Button>
+
+          {mode === 'existing' ? (
+            <>
+              <div className="grid gap-3 sm:grid-cols-[1fr_auto]">
+                <Field label="Teacher">
+                  <Select value={userId} onChange={(e) => setUserId(e.target.value)}>
+                    <option value="">Choose a teacher…</option>
+                    {candidates.map((t) => (
+                      <option key={t.id} value={t.id}>
+                        {t.full_name}
+                        {t.classes?.length ? ` — already on ${t.classes.map((c) => c.name).join(', ')}` : ''}
+                      </option>
+                    ))}
+                  </Select>
+                </Field>
+                <Field label="Role">
+                  <Select value={role} onChange={(e) => setRole(e.target.value)}>
+                    <option value="lead">Lead</option>
+                    <option value="assistant">Assistant</option>
+                    <option value="substitute">Substitute</option>
+                  </Select>
+                </Field>
+              </div>
+              {error && <Alert tone="risk">{error}</Alert>}
+              <Button
+                variant="primary"
+                disabled={!userId}
+                busy={assignExisting.busy}
+                onClick={() => assignExisting.run().catch(() => {})}
+                icon={<UserPlus size={15} />}
+              >
+                Assign to {classRow.name}
+              </Button>
+            </>
+          ) : (
+            <>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <Field label="Full name" required>
+                  <Input
+                    value={draft.full_name}
+                    onChange={(e) => setDraft({ ...draft, full_name: e.target.value })}
+                    placeholder="Ustadh Ahmad Sulaiman"
+                  />
+                </Field>
+                <Field label="Email address" required hint="This is how they sign in.">
+                  <Input
+                    type="email"
+                    value={draft.email}
+                    onChange={(e) => setDraft({ ...draft, email: e.target.value })}
+                    autoCapitalize="none"
+                    spellCheck="false"
+                    placeholder="ahmad.sulaiman@icfbayarea.com"
+                  />
+                </Field>
+              </div>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <Field label="Teaching PIN" hint="Optional. Lets them sign in on a phone with 4 digits.">
+                  <Input
+                    value={draft.pin}
+                    onChange={(e) => setDraft({ ...draft, pin: e.target.value.replace(/\D/g, '') })}
+                    inputMode="numeric"
+                    maxLength={12}
+                    placeholder="1014"
+                  />
+                </Field>
+                <Field label="Role on this class">
+                  <Select value={role} onChange={(e) => setRole(e.target.value)}>
+                    <option value="lead">Lead</option>
+                    <option value="assistant">Assistant</option>
+                    <option value="substitute">Substitute</option>
+                  </Select>
+                </Field>
+              </div>
+              {error && <Alert tone="risk">{error}</Alert>}
+              <Button
+                variant="primary"
+                disabled={!newTeacherValid}
+                busy={createAndAssign.busy}
+                onClick={() => createAndAssign.run().catch(() => {})}
+                icon={<UserPlus size={15} />}
+              >
+                Create account and assign
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </Modal>

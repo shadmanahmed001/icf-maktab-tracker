@@ -278,6 +278,69 @@ export function LessonHistoryList({ lessons, className, showTeacher = true }) {
   );
 }
 
+/**
+ * What the teacher has written about this child, presented as remarks rather
+ * than as a column of a results table. Parents come looking for exactly this,
+ * so it reads as prose with the strand and the judgement attached.
+ */
+export function TeacherComments({ assessments, childName, className }) {
+  const withComments = (assessments || []).filter((a) => a.comment && a.comment.trim());
+
+  if (!withComments.length) {
+    return (
+      <div
+        className={cx('rounded-xl px-4 py-6 text-center', className)}
+        style={{ background: 'var(--surface-sunken)' }}
+      >
+        <p className="text-[0.85rem] font-medium" style={{ color: 'var(--text-strong)' }}>
+          No written comments yet this term
+        </p>
+        <p className="mt-1 text-[0.8rem]" style={{ color: 'var(--text-muted)' }}>
+          {childName ? `${childName}'s teacher` : 'The class teacher'} adds a remark for each strand
+          as it is assessed. They will appear here and on the term report card.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <ul className={cx('space-y-2.5', className)}>
+      {withComments.map((entry) => (
+        <li
+          key={entry.id ?? entry.subject}
+          className="rounded-xl px-3.5 py-3"
+          style={{
+            background: 'var(--surface-sunken)',
+            borderLeft: `3px solid ${markForLevel(entry.mastery_level)}`,
+          }}
+        >
+          <p className="mb-1 flex flex-wrap items-center gap-2">
+            <span className="term text-[0.85rem] font-semibold" style={{ color: 'var(--text-strong)' }}>
+              {entry.subject}
+            </span>
+            <Badge tone={MASTERY[entry.mastery_level]?.tone || 'neutral'} size="sm">
+              {MASTERY[entry.mastery_level]?.label || entry.mastery_level}
+            </Badge>
+            <span className="text-[0.72rem]" style={{ color: 'var(--text-muted)' }}>
+              {mediumDate(entry.assessed_on)}
+              {entry.assessor ? ` \u00b7 ${entry.assessor}` : ''}
+            </span>
+          </p>
+          <p className="term text-[0.85rem] leading-relaxed" style={{ color: 'var(--text-body)' }}>
+            &ldquo;{entry.comment}&rdquo;
+          </p>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+/** The mark colour for an attainment band, used for the remark's edge stripe. */
+function markForLevel(level) {
+  const tone = MASTERY[level]?.tone || 'neutral';
+  return `var(--${tone})`;
+}
+
 /** Overall attainment as a single headline, when one number is the message. */
 export function OverallAttainment({ overall, className }) {
   if (!overall) {

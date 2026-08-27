@@ -106,7 +106,7 @@ function seedCurriculum() {
   }
 }
 
-function seedStaff() {
+function seedStaff(today) {
   const passwordHash = hashSecret(DEMO_PASSWORD);
 
   const adminIds = [];
@@ -116,9 +116,10 @@ function seedStaff() {
   ];
   for (const a of admins) {
     const result = run(
-      `INSERT INTO users (full_name, email, role, title, password_hash, pin_hash, phone)
-       VALUES (?, ?, 'admin', ?, ?, ?, ?)`,
-      [a.name, a.email, a.title, passwordHash, hashSecret('9999'), '(510) 555-0100']
+      `INSERT INTO users (full_name, email, role, title, password_hash, pin_hash, phone, last_login_at)
+       VALUES (?, ?, 'admin', ?, ?, ?, ?, ?)`,
+      [a.name, a.email, a.title, passwordHash, hashSecret('9999'), '(510) 555-0100',
+        `${today} 07:${String(between(10, 55))}:00`]
     );
     adminIds.push(result.lastID);
   }
@@ -138,10 +139,13 @@ function seedStaff() {
     classIds[key] = classResult.lastID;
 
     const teacherResult = run(
-      `INSERT INTO users (full_name, email, role, title, password_hash, pin_hash, phone)
-       VALUES (?, ?, 'teacher', ?, ?, ?, ?)`,
+      `INSERT INTO users (full_name, email, role, title, password_hash, pin_hash, phone, last_login_at)
+       VALUES (?, ?, 'teacher', ?, ?, ?, ?, ?)`,
       [t.name, `${slug(t.name)}@icfbayarea.com`, `${key} Teacher`, passwordHash,
-        hashSecret(t.pin), `(510) 555-${String(between(1000, 9999))}`]
+        hashSecret(t.pin), `(510) 555-${String(between(1000, 9999))}`,
+        // Class teachers check off daily, so they have all signed in — a lesson
+        // log from an account that never signed in would be a contradiction.
+        `${today} ${String(between(8, 17)).padStart(2, '0')}:${String(between(10, 55))}:00`]
     );
     teacherIds[key] = teacherResult.lastID;
 
@@ -152,10 +156,10 @@ function seedStaff() {
   // A floating assistant who covers across the upper grades — exercises the
   // multi-class teacher case in the portal.
   const assistant = run(
-    `INSERT INTO users (full_name, email, role, title, password_hash, pin_hash, phone)
-     VALUES (?, ?, 'teacher', ?, ?, ?, ?)`,
+    `INSERT INTO users (full_name, email, role, title, password_hash, pin_hash, phone, last_login_at)
+     VALUES (?, ?, 'teacher', ?, ?, ?, ?, ?)`,
     ['Ustadh Yusuf Amin', 'yusuf.amin@icfbayarea.com', 'Relief & Assistant Teacher',
-      passwordHash, hashSecret('1013'), '(510) 555-0177']
+      passwordHash, hashSecret('1013'), '(510) 555-0177', `${today} 09:20:00`]
   ).lastID;
   for (const key of ['Grade 5 Boys', 'Grade 6 Boys']) {
     run(`INSERT INTO class_teachers (class_id, user_id, role) VALUES (?, ?, 'assistant')`,
@@ -169,6 +173,17 @@ function seedStaff() {
  * Build families: siblings share a surname and guardians, which makes the
  * parent portal's multi-child switcher real rather than theoretical.
  */
+/**
+ * Roughly four families in five have signed in at least once. The rest are the
+ * ones the office still needs to hand a password to — which is exactly what the
+ * dashboard's setup panel exists to surface.
+ */
+function recentParentLogin() {
+  if (!chance(0.78)) return null;
+  const day = Math.max(1, 27 - between(0, 20));
+  return `2026-08-${String(day).padStart(2, '0')} 19:${String(between(10, 55))}:00`;
+}
+
 function seedStudentsAndFamilies(classIds, passwordHash) {
   const classKeys = Object.keys(classIds);
   const families = [];
@@ -191,16 +206,18 @@ function seedStudentsAndFamilies(classIds, passwordHash) {
     const emailBase = `${surname.toLowerCase()}${parentSeq}`;
 
     const father = run(
-      `INSERT INTO users (full_name, email, role, title, password_hash, phone)
-       VALUES (?, ?, 'parent', 'Parent / Guardian', ?, ?)`,
-      [fatherName, `${emailBase}.father@example.com`, passwordHash, `(510) 555-${String(between(1000, 9999))}`]
+      `INSERT INTO users (full_name, email, role, title, password_hash, phone, last_login_at)
+       VALUES (?, ?, 'parent', 'Parent / Guardian', ?, ?, ?)`,
+      [fatherName, `${emailBase}.father@example.com`, passwordHash,
+        `(510) 555-${String(between(1000, 9999))}`, recentParentLogin()]
     ).lastID;
 
     // Not every family registers both parents, which is true to life.
     const mother = chance(0.72) ? run(
-      `INSERT INTO users (full_name, email, role, title, password_hash, phone)
-       VALUES (?, ?, 'parent', 'Parent / Guardian', ?, ?)`,
-      [motherName, `${emailBase}.mother@example.com`, passwordHash, `(510) 555-${String(between(1000, 9999))}`]
+      `INSERT INTO users (full_name, email, role, title, password_hash, phone, last_login_at)
+       VALUES (?, ?, 'parent', 'Parent / Guardian', ?, ?, ?)`,
+      [motherName, `${emailBase}.mother@example.com`, passwordHash,
+        `(510) 555-${String(between(1000, 9999))}`, recentParentLogin()]
     ).lastID : null;
 
     const childCount = chance(0.25) ? 3 : (chance(0.55) ? 2 : 1);
@@ -600,7 +617,7 @@ function seedDatabase({ today = todayISO() } = {}) {
 
     seedTerms();
     seedCurriculum();
-    const { adminIds, classIds, teacherIds, assistant, passwordHash } = seedStaff();
+    const { adminIds, classIds, teacherIds, assistant, passwordHash } = seedStaff(today);
     const families = seedStudentsAndFamilies(classIds, passwordHash);
     const term = seedLessonHistory(classIds, teacherIds, assistant, today);
     seedAttendance(term, today);
