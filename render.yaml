@@ -6,6 +6,7 @@ services:
     region: oregon
     buildCommand: npm install && npm run build
     startCommand: npm start
+    healthCheckPath: /health
     envVars:
       - key: NODE_VERSION
         value: 22.14.0
@@ -13,3 +14,17 @@ services:
         value: production
       - key: PORT
         value: 10000
+      # Generated once by Render and kept across deploys, so sessions survive
+      # a restart.
+      - key: JWT_SECRET
+        generateValue: true
+      # The free plan has no persistent disk, so the database is rebuilt and
+      # reseeded on each deploy. Attach a disk (below) for a real rollout.
+      - key: DEMO_MODE
+        value: true
+    # Uncomment for a paid plan to keep data across deploys:
+    # disk:
+    #   name: maktab-data
+    #   mountPath: /var/data
+    #   sizeGB: 1
+    # and set DB_PATH=/var/data/maktab.db

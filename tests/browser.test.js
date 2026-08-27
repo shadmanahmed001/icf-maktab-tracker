@@ -182,8 +182,10 @@ async function runRole(browser, base, role, email, steps) {
       // Wait for the loading skeletons to resolve.
       await page.waitForTimeout(350);
 
-      const body = await page.textContent('body');
-      const missing = step.expect.filter((text) => !body.includes(text));
+      // innerText is rendered text only (textContent would include script
+      // source), and reflects CSS text-transform — so match case-insensitively.
+      const body = (await page.evaluate(() => document.body.innerText)).toLowerCase();
+      const missing = step.expect.filter((text) => !body.includes(text.toLowerCase()));
       assertTrue(
         missing.length === 0,
         `${step.path} rendered${missing.length ? ` — missing: ${missing.join(', ')}` : ''}`
@@ -191,7 +193,7 @@ async function runRole(browser, base, role, email, steps) {
 
       // A page showing an error block is a failure even if text matched.
       assertTrue(
-        !body.includes('Could not load this section'),
+        !body.includes('could not load this section'),
         `${step.path} loaded without an error block`
       );
 

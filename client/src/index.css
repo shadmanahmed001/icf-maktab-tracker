@@ -83,8 +83,23 @@
   --accent-text: #3730a3;
 }
 
+/*
+ * The dark palette, applied in the two states that call for it.
+ *
+ * A viewer has three theme states, not two: an explicit choice stamps
+ * data-theme on the root element, while the default "system" setting stamps
+ * nothing at all and leaves only prefers-color-scheme to go on. So the same
+ * palette is declared twice — once behind the media query for the unstamped
+ * case (guarded so an explicit light choice still beats a dark OS), and once
+ * for the explicit dark stamp so a toggle wins in either direction.
+ *
+ * Every value below is a token redefinition. No component style lives in here:
+ * a colour whose only definition sits behind a media query or a [data-theme]
+ * selector never applies in the unstamped state, which is how a page ends up
+ * rendering one theme's text on the other theme's ground.
+ */
 @media (prefers-color-scheme: dark) {
-  :root {
+:root:not([data-theme="light"]) {
     color-scheme: dark;
 
     --surface-page: #0b1220;
@@ -107,7 +122,7 @@
 
     /*
      * The dark scheme's marks are re-stepped from the same hues rather than
-     * lightened automatically: the validator's dark lightness band is 0.48–0.67,
+     * lightened automatically: the validator's dark lightness band is 0.48-0.67,
      * so bright pastels fail it. Inks go the other way — lighter, for AA text
      * contrast against the deep soft backgrounds.
      */
@@ -130,19 +145,79 @@
     --shadow-card: 0 1px 2px rgb(0 0 0 / 0.4);
     --shadow-raised: 0 4px 10px -2px rgb(0 0 0 / 0.5);
     --shadow-pop: 0 14px 24px -6px rgb(0 0 0 / 0.6);
-  }
+}
 
-  [data-portal="teacher"] {
-    --accent: #34d399;
-    --accent-soft: #064e3b;
-    --accent-text: #a7f3d0;
-  }
+:root:not([data-theme="light"]) [data-portal="teacher"] {
+  --accent: #34d399;
+  --accent-soft: #064e3b;
+  --accent-text: #a7f3d0;
+}
 
-  [data-portal="parent"] {
-    --accent: #a5b4fc;
-    --accent-soft: #1e1b4b;
-    --accent-text: #c7d2fe;
-  }
+:root:not([data-theme="light"]) [data-portal="parent"] {
+  --accent: #a5b4fc;
+  --accent-soft: #1e1b4b;
+  --accent-text: #c7d2fe;
+}
+}
+
+:root[data-theme="dark"] {
+    color-scheme: dark;
+
+    --surface-page: #0b1220;
+    --surface-card: #131c2e;
+    --surface-raised: #1a2436;
+    --surface-sunken: #0e1626;
+    --surface-inverse: #f8fafc;
+
+    --border-subtle: #26314a;
+    --border-strong: #354360;
+
+    --text-strong: #f1f5f9;
+    --text-body: #cbd5e1;
+    --text-muted: #94a3b8;
+    --text-inverse: #0f172a;
+
+    --accent: #2dd4bf;
+    --accent-soft: #10403b;
+    --accent-text: #99f6e4;
+
+    /*
+     * The dark scheme's marks are re-stepped from the same hues rather than
+     * lightened automatically: the validator's dark lightness band is 0.48-0.67,
+     * so bright pastels fail it. Inks go the other way — lighter, for AA text
+     * contrast against the deep soft backgrounds.
+     */
+    --ok: #0d9488;
+    --ok-ink: #5eead4;
+    --ok-soft: #06372a;
+    --warn: #b08a09;
+    --warn-ink: #fcd34d;
+    --warn-soft: #422006;
+    --risk: #e0417f;
+    --risk-ink: #fda4af;
+    --risk-soft: #45161a;
+    --info: #2f7de1;
+    --info-ink: #93c5fd;
+    --info-soft: #10294d;
+    --neutral: #64748b;
+    --neutral-ink: #cbd5e1;
+    --neutral-soft: #1e293b;
+
+    --shadow-card: 0 1px 2px rgb(0 0 0 / 0.4);
+    --shadow-raised: 0 4px 10px -2px rgb(0 0 0 / 0.5);
+    --shadow-pop: 0 14px 24px -6px rgb(0 0 0 / 0.6);
+}
+
+:root[data-theme="dark"] [data-portal="teacher"] {
+  --accent: #34d399;
+  --accent-soft: #064e3b;
+  --accent-text: #a7f3d0;
+}
+
+:root[data-theme="dark"] [data-portal="parent"] {
+  --accent: #a5b4fc;
+  --accent-soft: #1e1b4b;
+  --accent-text: #c7d2fe;
 }
 
 * {

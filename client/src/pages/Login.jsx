@@ -228,6 +228,8 @@ export default function Login() {
                           <button
                             key={account.id}
                             type="button"
+                            data-email={account.email}
+                            data-role={account.role}
                             onClick={() => signInWithDemoAccount(account)}
                             disabled={busy}
                             className="group flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left transition-colors hover:brightness-[0.98] disabled:opacity-60"

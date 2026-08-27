@@ -18,3 +18,6 @@ data/
 
 # Test artefacts
 screenshots/
+
+# Generated demo inputs — rebuilt by `npm run demo`, too large to track.
+client/src/demo/fixtures.json

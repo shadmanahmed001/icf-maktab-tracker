@@ -49,9 +49,9 @@ function RootRedirect() {
   return <Navigate to={home || '/login'} replace />;
 }
 
-export default function App() {
+export default function App({ Router = BrowserRouter }) {
   return (
-    <BrowserRouter>
+    <Router>
       <AuthProvider>
         <Routes>
           <Route path="/" element={<RootRedirect />} />
@@ -118,6 +118,6 @@ export default function App() {
         </Routes>
         <ToastHost />
       </AuthProvider>
-    </BrowserRouter>
+    </Router>
   );
 }

@@ -9,6 +9,10 @@ services:
       - PORT=3000
       - NODE_ENV=production
       - DB_PATH=/app/data/maktab.db
+      # Set this to a long random string before going live.
+      - JWT_SECRET=${JWT_SECRET:-}
+      # Turn off once real accounts exist.
+      - DEMO_MODE=${DEMO_MODE:-true}
     volumes:
       - maktab_data:/app/data
 

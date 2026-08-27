@@ -9,14 +9,18 @@
   "scripts": {
     "start": "node server/index.js",
     "dev": "concurrently -n server,client -c cyan,magenta \"node --watch server/index.js\" \"npm --prefix client run dev\"",
-    "server": "node server/index.js",
     "build": "npm --prefix client install --include=dev && npm --prefix client run build",
-    "build:demo": "npm --prefix client install --include=dev && npm --prefix client run build:demo",
     "seed": "node server/seed/index.js",
     "reseed": "rm -f server/maktab.db && node server/seed/index.js",
     "test": "node --test tests/api.test.js",
     "test:e2e": "node tests/browser.test.js",
-    "lint": "npm --prefix client run lint"
+    "test:all": "npm test && npm run test:e2e",
+    "lint": "npm --prefix client run lint",
+    "demo": "npm run demo:fixtures && npm run demo:build && npm run demo:page && npm run demo:verify",
+    "demo:fixtures": "node scripts/capture-demo-fixtures.js",
+    "demo:build": "npm --prefix client run build:demo",
+    "demo:page": "node scripts/build-demo-artifact.js",
+    "demo:verify": "node scripts/verify-demo.js"
   },
   "keywords": [
     "maktab",
