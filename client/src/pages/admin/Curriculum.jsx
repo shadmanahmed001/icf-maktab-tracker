@@ -28,6 +28,7 @@ export default function AdminCurriculum() {
   const [retiring, setRetiring] = useState(null);
 
   const terms = useApi(() => api.terms(), []);
+  const gaps = useApi(() => api.admin.curriculumGaps(), []);
   const curriculum = useApi(
     () => api.curriculum({ grade, term_number: termNumber }),
     [grade, termNumber]
@@ -36,12 +37,22 @@ export default function AdminCurriculum() {
   const save = useAction(
     (payload) => (payload.id ? api.admin.updateTopic(payload.id, payload) : api.admin.createTopic(payload)),
     {
-      onSuccess: () => { toast(editing?.id ? 'Standard updated' : 'Standard added'); setEditing(null); curriculum.reload(); },
+      onSuccess: () => {
+        toast(editing?.id ? 'Standard updated' : 'Standard added');
+        setEditing(null);
+        curriculum.reload();
+        gaps.reload();
+      },
     }
   );
 
   const retire = useAction((id) => api.admin.retireTopic(id), {
-    onSuccess: () => { toast('Standard retired'); setRetiring(null); curriculum.reload(); },
+    onSuccess: () => {
+      toast('Standard retired');
+      setRetiring(null);
+      curriculum.reload();
+      gaps.reload();
+    },
   });
 
   const memorization = curriculum.data?.memorization?.[0] || null;
@@ -61,6 +72,11 @@ export default function AdminCurriculum() {
             Add standard
           </Button>
         )}
+      />
+
+      <CurriculumGaps
+        gaps={gaps.data?.gaps}
+        onJump={(gap) => { setGrade(gap.grade); setTermNumber(gap.term_number); }}
       />
 
       <div className="mb-4 flex flex-wrap items-end gap-3">
@@ -279,5 +295,41 @@ function TopicForm({ value, onChange, onClose, onSave, busy, error, terms }) {
         {error && <Alert tone="risk">{error}</Alert>}
       </div>
     </Modal>
+  );
+}
+
+/**
+ * Days in a term with no standard written for them. The teacher's check-off has
+ * nothing to suggest on such a day and the class can never reach full coverage,
+ * so the gap is named here with a jump straight to the term that needs filling.
+ */
+function CurriculumGaps({ gaps, onJump }) {
+  if (!gaps || gaps.length === 0) return null;
+
+  return (
+    <Alert
+      tone="warn"
+      title={`${gaps.length === 1 ? 'One term is' : `${gaps.length} terms are`} missing a teaching day`}
+      className="mb-4"
+    >
+      <p className="mb-2">
+        A weekday with no standard leaves the daily check-off with nothing to suggest, and the class
+        cannot reach 100% coverage. Add the missing standard and the warning clears.
+      </p>
+      <ul className="flex flex-wrap gap-2">
+        {gaps.map((gap) => (
+          <li key={`${gap.grade}-${gap.term_number}`}>
+            <button
+              type="button"
+              onClick={() => onJump(gap)}
+              className="rounded-lg px-2.5 py-1 text-[0.78rem] font-semibold underline decoration-dotted"
+              style={{ color: 'var(--warn-ink)' }}
+            >
+              Grade {gap.grade}, {gap.term_title} — no {gap.missingDays.join(' or ')} standard
+            </button>
+          </li>
+        ))}
+      </ul>
+    </Alert>
   );
 }

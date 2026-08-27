@@ -220,6 +220,7 @@ export const demoApi = {
 
     setCurrentTerm: () => simulate(),
     updateTerm: () => simulate(),
+    curriculumGaps: () => read('/admin/curriculum-gaps'),
     createTopic: () => simulate({ id: -1 }),
     updateTopic: () => simulate(),
     retireTopic: () => simulate({ retired: true }),

@@ -1,0 +1,24 @@
+# Keep the build context small and the layer cache useful: dependencies are
+# installed inside the image from the lockfiles, never copied in.
+node_modules
+client/node_modules
+client/dist
+client/dist-demo
+client/src/demo/fixtures.json
+
+.git
+.github
+screenshots
+tests
+scripts
+
+# The database is created and seeded on first boot; never ship one.
+server/*.db
+server/*.db.tmp
+data
+
+.env
+.env.*
+*.log
+.DS_Store
+README.md

@@ -91,6 +91,27 @@ and Names of Allāh, set per grade.
 The year runs as four teaching terms plus the **Ramaḍān interlude**, which
 introduces no new standards and is excluded from pacing judgements.
 
+### What the curriculum contains
+
+The full An-Nasīḥah sequence ships pre-loaded and is editable in the admin
+portal:
+
+| | |
+| :--- | :--- |
+| Terms | 4 teaching terms + the Ramaḍān interlude |
+| Grades | 1–6 |
+| Standards | **121**, each with its topic and its observable end-of-term indicator |
+| Memorization targets | **24** — all 6 grades × 4 terms, with Sūrah, Duʿāʾ and Names of Allāh |
+| Gender-track variants | Grade 6 Fiqh in Term 2 splits: boys' imāmah, adhān & iqāmah, Jumuʿah; girls' fiqh of ḥayḍ, nifās and istiḥāḍah |
+
+Every standard has both a topic and an indicator — there are no blank entries.
+
+**One known gap:** Grade 4, Term 2 has no Monday (Fiqh) standard, so that grade
+has 19 standards where the others have 20 or 21. This gap is in the source data
+the project started from, not something introduced since. The admin Curriculum
+screen now detects gaps of this kind and shows a banner linking straight to the
+term that needs filling — add the standard and the banner clears.
+
 ### How pacing is judged
 
 A term holds five standards, one per strand, each taught across roughly nine
@@ -203,7 +224,51 @@ server behind it and says so.
 
 ## Deployment
 
-### Docker Compose (recommended for a masjid server)
+There are two useful meanings of "deploy this", and the repository supports both
+from one push. Both are wired into
+[`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) and run
+automatically on any push to `main` or a `claude/**` branch; neither publishes
+from a red build.
+
+### 1. A public link for feedback — GitHub Pages
+
+The workflow builds the self-contained demo and publishes it to GitHub Pages at:
+
+```
+https://shadmanahmed001.github.io/icf-maktab-tracker/
+```
+
+Anyone with the link can walk all three portals — no account, no install. The
+sign-in screen lists the demo accounts and the password. Because it is a static
+page there is **no server behind it**, so anything a reviewer types is kept in
+their own browser for that visit and then gone. That is the right trade for
+gathering feedback on the design and the workflow; it is not a pilot.
+
+The workflow enables Pages itself on the first run, so there is nothing to
+switch on. One caveat: a repository has a single Pages site, so whichever branch
+pushed last is what the link serves.
+
+### 2. A real server for a pilot — container image
+
+The same workflow publishes a container image to GitHub Container Registry, so
+the real application with a working database is one command away on any machine:
+
+```bash
+docker run -d --name maktab -p 3000:3000 \
+  -e JWT_SECRET="$(openssl rand -hex 32)" \
+  -e DEMO_MODE=false \
+  -v maktab_data:/app/data \
+  ghcr.io/shadmanahmed001/icf-maktab-tracker:main
+```
+
+Use the branch name as the tag to run a specific branch. Data lives on the
+`maktab_data` volume and survives upgrades — pull a new image, recreate the
+container, and the database is untouched.
+
+For a pilot where testers should sign themselves in, keep `DEMO_MODE=true` so
+the account list stays on the sign-in screen.
+
+### Building it yourself
 
 ```bash
 git clone <repo-url> /opt/maktab-tracker
@@ -211,9 +276,7 @@ cd /opt/maktab-tracker
 JWT_SECRET="$(openssl rand -hex 32)" DEMO_MODE=false docker compose up -d --build
 ```
 
-Runs on port 3000 with the database on the `maktab_data` volume.
-
-### Node with PM2
+Or without Docker:
 
 ```bash
 npm install && npm run build
@@ -224,11 +287,12 @@ pm2 save
 
 ### Render
 
-`render.yaml` is set up for one-click deploy and generates `JWT_SECRET` for you.
-Note that the **free plan has no persistent disk**, so the database is reseeded
-on every deploy — fine for a demonstration, not for real records. For a real
-rollout, attach a disk and point `DB_PATH` at it (both are commented in the
-file).
+`render.yaml` is a blueprint for a one-click deploy, and generates `JWT_SECRET`
+for you. Two things to know about the free plan: there is **no persistent disk**,
+so the database is rebuilt and reseeded on every deploy, and the instance sleeps
+after inactivity, so the first request takes around a minute. Fine for a
+demonstration, not for real records — for those, attach a disk and point
+`DB_PATH` at it (both are commented in the file).
 
 ### Behind a reverse proxy
 
@@ -240,8 +304,6 @@ maktab.fremontmasjid.org {
 
 The server trusts one proxy hop, so `secure` cookies and per-IP rate limiting
 work correctly behind TLS termination.
-
----
 
 ## Backups
 

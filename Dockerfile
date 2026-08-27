@@ -26,7 +26,10 @@ COPY server/ ./server/
 COPY --from=client-build /app/client/dist ./client/dist
 
 # The database is a single file; this volume is the only thing to back up.
-RUN mkdir -p /app/data
+# The directory must belong to the unprivileged user that runs the process, or
+# the first write fails with EACCES — the image creates it as root otherwise,
+# and Docker carries that ownership onto a fresh named volume.
+RUN mkdir -p /app/data && chown -R node:node /app/data
 VOLUME /app/data
 
 # Run unprivileged.

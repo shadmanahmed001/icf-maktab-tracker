@@ -16,11 +16,12 @@
     "test:e2e": "node tests/browser.test.js",
     "test:all": "npm test && npm run test:e2e",
     "lint": "npm --prefix client run lint",
-    "demo": "npm run demo:fixtures && npm run demo:build && npm run demo:page && npm run demo:verify",
+    "demo": "npm run demo:fixtures && npm run demo:build && npm run demo:page && npm run demo:verify && npm run demo:verify-pages",
     "demo:fixtures": "node scripts/capture-demo-fixtures.js",
     "demo:build": "npm --prefix client run build:demo",
     "demo:page": "node scripts/build-demo-artifact.js",
-    "demo:verify": "node scripts/verify-demo.js"
+    "demo:verify": "node scripts/verify-demo.js",
+    "demo:verify-pages": "node scripts/verify-pages.js"
   },
   "keywords": [
     "maktab",

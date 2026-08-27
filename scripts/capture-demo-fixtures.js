@@ -126,6 +126,7 @@ async function main() {
   }
   await record('admin', admin, '/admin/reports/attendance');
   await record('admin', admin, '/admin/audit?limit=150');
+  await record('admin', admin, '/admin/curriculum-gaps');
 
   // Per-class and a sample of per-student detail pages.
   for (const c of classes) {

@@ -118,6 +118,7 @@ export const api = {
     setCurrentTerm: (term_number) => http.post('/admin/terms/set-current', { term_number }),
     updateTerm: (id, payload) => http.patch(`/admin/terms/${id}`, payload),
 
+    curriculumGaps: () => http.get('/admin/curriculum-gaps'),
     createTopic: (payload) => http.post('/admin/curriculum-topics', payload),
     updateTopic: (id, payload) => http.patch(`/admin/curriculum-topics/${id}`, payload),
     retireTopic: (id) => http.del(`/admin/curriculum-topics/${id}`),

@@ -625,6 +625,44 @@ router.delete('/curriculum-topics/:id', handler((req, res) => {
   return ok(res, { retired: true });
 }));
 
+/**
+ * Holes in the syllabus: a grade and term with no standard for one of the five
+ * teaching days. A gap means the teacher's check-off has nothing to suggest on
+ * that day and the class can never reach 100% coverage, so it is worth naming
+ * rather than leaving to be noticed in week six.
+ */
+router.get('/curriculum-gaps', handler((req, res) => {
+  const TEACHING_DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+  const grades = all(`SELECT DISTINCT grade FROM curriculum_topics ORDER BY grade ASC`)
+    .map((r) => r.grade);
+  const terms = all(`SELECT term_number, title, is_interlude FROM terms ORDER BY start_date ASC`);
+
+  const gaps = [];
+  for (const grade of grades) {
+    for (const term of terms) {
+      // The Ramaḍān interlude introduces no new standards by design.
+      if (term.is_interlude) continue;
+
+      const covered = all(
+        `SELECT DISTINCT day_of_week FROM curriculum_topics
+          WHERE grade = ? AND term_number = ? AND is_active = 1`,
+        [grade, term.term_number]
+      ).map((r) => r.day_of_week);
+
+      // A term with nothing at all is not yet written, which is different from
+      // a term that is written but missing a day.
+      if (covered.length === 0) continue;
+
+      const missing = TEACHING_DAYS.filter((day) => !covered.includes(day));
+      if (missing.length) {
+        gaps.push({ grade, term_number: term.term_number, term_title: term.title, missingDays: missing });
+      }
+    }
+  }
+
+  return ok(res, { gaps, checkedGrades: grades.length, checkedTerms: terms.filter((t) => !t.is_interlude).length });
+}));
+
 // ── Announcements ───────────────────────────────────────────────────────────
 
 router.get('/announcements', handler((req, res) => ok(res, all(
