@@ -1,18 +1,22 @@
 {
   "name": "icf-maktab-tracker",
   "version": "1.0.0",
-  "description": "Islamic Center of Fremont (ICF) Maktab Daily Lesson Plan & Progress Tracker",
+  "description": "Islamic Center of Fremont (ICF) Daily Maktab — academic standards tracker with admin, teacher and parent portals",
   "main": "server/index.js",
   "engines": {
     "node": ">=20.0.0"
   },
   "scripts": {
     "start": "node server/index.js",
+    "dev": "concurrently -n server,client -c cyan,magenta \"node --watch server/index.js\" \"npm --prefix client run dev\"",
+    "server": "node server/index.js",
     "build": "npm --prefix client install --include=dev && npm --prefix client run build",
-    "seed": "node server/seed.js",
-    "client:dev": "npm --prefix client run dev",
-    "server:dev": "node server/index.js",
-    "dev": "npm run build && node server/index.js"
+    "build:demo": "npm --prefix client install --include=dev && npm --prefix client run build:demo",
+    "seed": "node server/seed/index.js",
+    "reseed": "rm -f server/maktab.db && node server/seed/index.js",
+    "test": "node --test tests/api.test.js",
+    "test:e2e": "node tests/browser.test.js",
+    "lint": "npm --prefix client run lint"
   },
   "keywords": [
     "maktab",
@@ -24,10 +28,19 @@
   "author": "shadmanahmed001",
   "license": "ISC",
   "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "compression": "^1.8.1",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
+    "express-rate-limit": "^8.6.2",
+    "helmet": "^8.3.0",
+    "jsonwebtoken": "^9.0.3",
     "morgan": "^1.10.1",
     "sql.js": "^1.14.0"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.5"
   }
 }

@@ -1,6 +1,17 @@
 node_modules/
 client/node_modules/
 client/dist/
+client/dist-demo/
 .DS_Store
 *.log
+
+# Environment configuration — never commit secrets
 .env
+.env.*
+!.env.example
+
+# The SQLite database is generated on first boot and seeded automatically.
+server/*.db
+server/*.db.tmp
+server/*.db-journal
+data/

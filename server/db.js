@@ -1,162 +1,179 @@
+/**
+ * SQLite access layer built on sql.js (WebAssembly).
+ *
+ * sql.js keeps the whole database in memory and hands back a byte array on
+ * export, so persistence is "serialise the file and replace it on disk". Two
+ * things matter for that to be safe in production:
+ *
+ *   1. Writes are atomic — we render to a temp file in the same directory and
+ *      rename it over the target, so a crash mid-write cannot truncate the
+ *      live database.
+ *   2. Bulk work does not pay per-statement serialisation cost — `transaction()`
+ *      suspends persistence, runs inside a real SQL transaction, and flushes
+ *      once at the end.
+ *
+ * The whole API is synchronous after `initDb()` resolves, which keeps route
+ * handlers free of interleaving bugs.
+ */
 const initSqlJs = require('sql.js');
 const fs = require('fs');
 const path = require('path');
 
 const DB_PATH = process.env.DB_PATH || path.join(__dirname, 'maktab.db');
 
-let dbInstance = null;
+let db = null;
+let dirty = false;
+let suspendDepth = 0;
 
-async function getDb() {
-  if (dbInstance) return dbInstance;
+function assertReady() {
+  if (!db) throw new Error('Database not initialised — await initDb() during startup');
+  return db;
+}
 
+async function initDb() {
+  if (db) return db;
   const SQL = await initSqlJs();
-  
+
   if (fs.existsSync(DB_PATH)) {
-    const filebuffer = fs.readFileSync(DB_PATH);
-    dbInstance = new SQL.Database(filebuffer);
-    console.log('Loaded existing SQLite database from', DB_PATH);
+    db = new SQL.Database(fs.readFileSync(DB_PATH));
+    console.log(`[db] loaded ${DB_PATH}`);
   } else {
-    dbInstance = new SQL.Database();
-    console.log('Created new SQLite database in memory, will persist to', DB_PATH);
+    fs.mkdirSync(path.dirname(DB_PATH), { recursive: true });
+    db = new SQL.Database();
+    console.log(`[db] created new database, will persist to ${DB_PATH}`);
   }
-  return dbInstance;
+
+  db.run('PRAGMA foreign_keys = ON');
+  return db;
 }
 
-function saveDb() {
-  if (!dbInstance) return;
+/** Serialise the in-memory database over the on-disk file, atomically. */
+function flush() {
+  if (!db || !dirty) return;
+  const tmp = `${DB_PATH}.${process.pid}.tmp`;
   try {
-    const data = dbInstance.export();
-    const buffer = Buffer.from(data);
-    fs.writeFileSync(DB_PATH, buffer);
+    fs.writeFileSync(tmp, Buffer.from(db.export()));
+    fs.renameSync(tmp, DB_PATH);
+    dirty = false;
   } catch (err) {
-    console.error('Failed to persist database to disk:', err);
+    console.error('[db] failed to persist:', err.message);
+    try { fs.unlinkSync(tmp); } catch { /* nothing to clean up */ }
   }
 }
 
-// Convert params to array format for sql.js
-function formatParams(params) {
-  if (!params) return [];
-  if (Array.isArray(params)) return params;
-  return [params];
+function markDirty() {
+  dirty = true;
+  if (suspendDepth === 0) flush();
 }
 
-const query = async (sql, params = []) => {
-  const db = await getDb();
-  const stmt = db.prepare(sql);
-  stmt.bind(formatParams(params));
-  const results = [];
-  while (stmt.step()) {
-    results.push(stmt.getAsObject());
+/**
+ * sql.js accepts either positional arrays or `:name` objects. Normalise both,
+ * and coerce `undefined` to `null` so a missing optional field binds cleanly
+ * instead of throwing.
+ */
+function bindParams(stmt, params) {
+  if (params === undefined || params === null) return;
+  if (Array.isArray(params)) {
+    stmt.bind(params.map((val) => (val === undefined ? null : val)));
+    return;
   }
-  stmt.free();
-  return results;
-};
+  if (typeof params === 'object') {
+    const named = {};
+    for (const [key, val] of Object.entries(params)) {
+      named[key.startsWith(':') ? key : `:${key}`] = val === undefined ? null : val;
+    }
+    stmt.bind(named);
+    return;
+  }
+  stmt.bind([params]);
+}
 
-const get = async (sql, params = []) => {
-  const rows = await query(sql, params);
-  return rows[0] || null;
-};
+function all(sql, params) {
+  const stmt = assertReady().prepare(sql);
+  try {
+    bindParams(stmt, params);
+    const rows = [];
+    while (stmt.step()) rows.push(stmt.getAsObject());
+    return rows;
+  } finally {
+    stmt.free();
+  }
+}
 
-const run = async (sql, params = []) => {
-  const db = await getDb();
-  db.run(sql, formatParams(params));
-  saveDb();
-  // Get last insert rowid
-  const lastIdRes = db.exec("SELECT last_insert_rowid() AS id");
-  const lastID = lastIdRes.length > 0 && lastIdRes[0].values.length > 0 ? lastIdRes[0].values[0][0] : 0;
-  return { lastID, changes: 1 };
-};
+function get(sql, params) {
+  return all(sql, params)[0] || null;
+}
 
-const exec = async (sql) => {
-  const db = await getDb();
-  db.exec(sql);
-  saveDb();
-};
+/** Single scalar value from the first column of the first row. */
+function value(sql, params, fallback = null) {
+  const row = get(sql, params);
+  if (!row) return fallback;
+  const first = Object.values(row)[0];
+  return first === undefined ? fallback : first;
+}
 
-async function initSchema() {
-  const schema = `
-    CREATE TABLE IF NOT EXISTS classes (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      name TEXT NOT NULL,
-      grade INTEGER NOT NULL,
-      gender_track TEXT DEFAULT 'general',
-      teacher_name TEXT NOT NULL,
-      room TEXT,
-      student_count INTEGER DEFAULT 15,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    );
+function run(sql, params) {
+  const database = assertReady();
+  const stmt = database.prepare(sql);
+  try {
+    bindParams(stmt, params);
+    stmt.step();
+  } finally {
+    stmt.free();
+  }
+  const changes = database.getRowsModified();
+  const lastID = value('SELECT last_insert_rowid() AS id', [], 0);
+  markDirty();
+  return { lastID, changes };
+}
 
-    CREATE TABLE IF NOT EXISTS terms (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      term_number INTEGER NOT NULL,
-      title TEXT NOT NULL,
-      date_range TEXT NOT NULL,
-      start_date TEXT NOT NULL,
-      end_date TEXT NOT NULL,
-      is_current INTEGER DEFAULT 0,
-      is_interlude INTEGER DEFAULT 0,
-      description TEXT
-    );
+/** Multi-statement DDL / script execution. */
+function exec(sql) {
+  assertReady().exec(sql);
+  markDirty();
+}
 
-    CREATE TABLE IF NOT EXISTS curriculum_topics (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      grade INTEGER NOT NULL,
-      gender_track TEXT DEFAULT 'general',
-      term_number INTEGER NOT NULL,
-      day_of_week TEXT NOT NULL,
-      subject TEXT NOT NULL,
-      topic_title TEXT NOT NULL,
-      expected_indicator TEXT NOT NULL,
-      sequence_order INTEGER DEFAULT 1
-    );
+/**
+ * Run `fn` inside a SQL transaction with disk persistence suspended.
+ * Nested calls join the outer transaction rather than opening a new one.
+ */
+function transaction(fn) {
+  const database = assertReady();
+  const outermost = suspendDepth === 0;
+  suspendDepth += 1;
+  if (outermost) database.run('BEGIN');
+  try {
+    const result = fn();
+    if (outermost) database.run('COMMIT');
+    return result;
+  } catch (err) {
+    if (outermost) {
+      try { database.run('ROLLBACK'); } catch { /* transaction already unwound */ }
+    }
+    throw err;
+  } finally {
+    suspendDepth -= 1;
+    if (suspendDepth === 0) flush();
+  }
+}
 
-    CREATE TABLE IF NOT EXISTS memorization_standards (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      grade INTEGER NOT NULL,
-      term_number INTEGER NOT NULL,
-      surah TEXT NOT NULL,
-      dua TEXT NOT NULL,
-      names_of_allah TEXT NOT NULL
-    );
-
-    CREATE TABLE IF NOT EXISTS lesson_logs (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      class_id INTEGER NOT NULL,
-      topic_id INTEGER,
-      date TEXT NOT NULL,
-      day_of_week TEXT NOT NULL,
-      subject TEXT NOT NULL,
-      session_type TEXT DEFAULT 'standard_lesson',
-      teacher_name TEXT NOT NULL,
-      topic_covered TEXT NOT NULL,
-      expected_indicator TEXT,
-      memorization_covered TEXT,
-      status TEXT DEFAULT 'completed',
-      mastery_level TEXT DEFAULT 'mastered',
-      notes TEXT,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY (class_id) REFERENCES classes(id),
-      FOREIGN KEY (topic_id) REFERENCES curriculum_topics(id)
-    );
-
-    CREATE TABLE IF NOT EXISTS users (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      name TEXT NOT NULL,
-      email TEXT UNIQUE,
-      role TEXT NOT NULL,
-      assigned_class_id INTEGER,
-      pin TEXT DEFAULT '1234'
-    );
-  `;
-  await exec(schema);
-  console.log('Database schema verified/created successfully via pure WASM SQLite.');
+/** Flush pending writes before the process goes away. */
+function installShutdownHooks() {
+  let closing = false;
+  const finish = (signal, code) => {
+    if (closing) return;
+    closing = true;
+    flush();
+    if (signal) {
+      console.log(`[db] flushed on ${signal}`);
+      process.exit(code ?? 0);
+    }
+  };
+  process.on('exit', () => finish(null));
+  process.on('SIGINT', () => finish('SIGINT', 130));
+  process.on('SIGTERM', () => finish('SIGTERM', 143));
 }
 
 module.exports = {
-  getDb,
-  query,
-  get,
-  run,
-  exec,
-  initSchema
+  initDb, all, get, value, run, exec, transaction, flush, installShutdownHooks, DB_PATH,
 };

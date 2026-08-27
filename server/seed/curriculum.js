@@ -1,22 +1,12 @@
-const { query, run, exec, initSchema } = require('./db');
+/**
+ * The An-Nasīḥah 2026–2027 syllabus as taught at the ICF Daily Maktab.
+ *
+ * This is reference data, not sample data: the terms, the per-grade strand
+ * sequence and the memorization targets are the school's actual standards.
+ * Administrators can edit any of it in the Curriculum screen once running.
+ */
 
-async function seedDatabase() {
-  await initSchema();
-
-  console.log('Seeding ICF Daily Maktab 2026-2027 data (Grades & Gender Split)...');
-
-  // 1. Clear existing data
-  await exec(`
-    DELETE FROM lesson_logs;
-    DELETE FROM memorization_standards;
-    DELETE FROM curriculum_topics;
-    DELETE FROM terms;
-    DELETE FROM classes;
-    DELETE FROM users;
-  `);
-
-  // 2. Insert Terms
-  const terms = [
+const TERMS = [
     {
       term_number: 1,
       title: 'Term 1',
@@ -67,71 +57,9 @@ async function seedDatabase() {
       is_interlude: 0,
       description: 'Final term including spring break and year-end mastery assessment.'
     }
-  ];
+];
 
-  for (const t of terms) {
-    await run(
-      `INSERT INTO terms (term_number, title, date_range, start_date, end_date, is_current, is_interlude, description)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-      [t.term_number, t.title, t.date_range, t.start_date, t.end_date, t.is_current, t.is_interlude, t.description]
-    );
-  }
-
-  // 3. Insert Classes (Full Grade & Gender Matrix)
-  const classes = [
-    { name: 'Grade 1 Boys', grade: 1, gender_track: 'boys', teacher_name: 'Ustadh Ahmad', room: 'Room 101', student_count: 14 },
-    { name: 'Grade 1 Girls', grade: 1, gender_track: 'girls', teacher_name: 'Ustadha Maryam', room: 'Room 102', student_count: 15 },
-    
-    { name: 'Grade 2 Boys', grade: 2, gender_track: 'boys', teacher_name: 'Ustadh Bilal', room: 'Room 103', student_count: 16 },
-    { name: 'Grade 2 Girls', grade: 2, gender_track: 'girls', teacher_name: 'Ustadha Zainab', room: 'Room 104', student_count: 14 },
-    
-    { name: 'Grade 3 Boys', grade: 3, gender_track: 'boys', teacher_name: 'Ustadh Tariq', room: 'Room 105', student_count: 15 },
-    { name: 'Grade 3 Girls', grade: 3, gender_track: 'girls', teacher_name: 'Ustadha Aisha', room: 'Room 106', student_count: 16 },
-    
-    { name: 'Grade 4 Boys', grade: 4, gender_track: 'boys', teacher_name: 'Ustadh Zayd', room: 'Room 201', student_count: 17 },
-    { name: 'Grade 4 Girls', grade: 4, gender_track: 'girls', teacher_name: 'Ustadha Khadijah', room: 'Room 202', student_count: 15 },
-    
-    { name: 'Grade 5 Boys', grade: 5, gender_track: 'boys', teacher_name: 'Ustadh Hamza', room: 'Room 203', student_count: 13 },
-    { name: 'Grade 5 Girls', grade: 5, gender_track: 'girls', teacher_name: 'Ustadha Fatima', room: 'Room 204', student_count: 14 },
-    
-    { name: 'Grade 6 Boys', grade: 6, gender_track: 'boys', teacher_name: 'Ustadh Umar', room: 'Room 205', student_count: 12 },
-    { name: 'Grade 6 Girls', grade: 6, gender_track: 'girls', teacher_name: 'Ustadha Safiyyah', room: 'Room 206', student_count: 13 },
-  ];
-
-  for (const c of classes) {
-    await run(
-      `INSERT INTO classes (name, grade, gender_track, teacher_name, room, student_count)
-       VALUES (?, ?, ?, ?, ?, ?)`,
-      [c.name, c.grade, c.gender_track, c.teacher_name, c.room, c.student_count]
-    );
-  }
-
-  // 4. Insert Users
-  const users = [
-    { name: 'Admin (Academic Standards)', email: 'admin@icfmaktab.org', role: 'admin', assigned_class_id: null, pin: '9999' },
-    { name: 'Ustadh Ahmad', email: 'ahmad@icfmaktab.org', role: 'teacher', assigned_class_id: 1, pin: '1001' },
-    { name: 'Ustadha Maryam', email: 'maryam@icfmaktab.org', role: 'teacher', assigned_class_id: 2, pin: '1002' },
-    { name: 'Ustadh Bilal', email: 'bilal@icfmaktab.org', role: 'teacher', assigned_class_id: 3, pin: '1003' },
-    { name: 'Ustadha Zainab', email: 'zainab@icfmaktab.org', role: 'teacher', assigned_class_id: 4, pin: '1004' },
-    { name: 'Ustadh Tariq', email: 'tariq@icfmaktab.org', role: 'teacher', assigned_class_id: 5, pin: '1005' },
-    { name: 'Ustadha Aisha', email: 'aisha@icfmaktab.org', role: 'teacher', assigned_class_id: 6, pin: '1006' },
-    { name: 'Ustadh Zayd', email: 'zayd@icfmaktab.org', role: 'teacher', assigned_class_id: 7, pin: '1007' },
-    { name: 'Ustadha Khadijah', email: 'khadijah@icfmaktab.org', role: 'teacher', assigned_class_id: 8, pin: '1008' },
-    { name: 'Ustadh Hamza', email: 'hamza@icfmaktab.org', role: 'teacher', assigned_class_id: 9, pin: '1009' },
-    { name: 'Ustadha Fatima', email: 'fatima@icfmaktab.org', role: 'teacher', assigned_class_id: 10, pin: '1010' },
-    { name: 'Ustadh Umar', email: 'umar@icfmaktab.org', role: 'teacher', assigned_class_id: 11, pin: '1011' },
-    { name: 'Ustadha Safiyyah', email: 'safiyyah@icfmaktab.org', role: 'teacher', assigned_class_id: 12, pin: '1012' },
-  ];
-
-  for (const u of users) {
-    await run(
-      `INSERT INTO users (name, email, role, assigned_class_id, pin) VALUES (?, ?, ?, ?, ?)`,
-      [u.name, u.email, u.role, u.assigned_class_id, u.pin]
-    );
-  }
-
-  // 5. Complete Curriculum Topics (From ICF Lesson Plan PDF)
-  const rawTopics = [
+const CURRICULUM_TOPICS = [
     // GRADE 1
     // Term 1
     { grade: 1, gender_track: 'general', term: 1, day: 'Monday', subject: 'Fiqh', topic: 'Intro to Fiqh; the Five Pillars of Islam; the Shahādah', indicator: 'Name the five pillars; recite and explain the Shahādah', seq: 1 },
@@ -289,18 +217,9 @@ async function seedDatabase() {
     { grade: 6, gender_track: 'general', term: 4, day: 'Wednesday', subject: 'Tārīkh', topic: 'The Umayyads; the Umayyad contribution to the world; revision', indicator: 'Outline the Umayyad period and its contributions', seq: 4 },
     { grade: 6, gender_track: 'general', term: 4, day: 'Thursday', subject: 'ʿAqā\'id', topic: 'Awliyā\'; muʿjizāt; al-Isrā\' wal-Miʿrāj; karāmāt; revision', indicator: 'Distinguish a muʿjizah from a karāmah', seq: 4 },
     { grade: 6, gender_track: 'general', term: 4, day: 'Friday', subject: 'Ādāb', topic: 'Pride; following the Sunnah; adhān & modesty in dress; then Ādāb of moderation in expenditure, women in society, personal hygiene', indicator: 'Demonstrate the ādāb of modesty, moderation, and hygiene', seq: 4 },
-  ];
+];
 
-  for (const topic of rawTopics) {
-    await run(
-      `INSERT INTO curriculum_topics (grade, gender_track, term_number, day_of_week, subject, topic_title, expected_indicator, sequence_order)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-      [topic.grade, topic.gender_track, topic.term, topic.day, topic.subject, topic.topic, topic.indicator, topic.seq]
-    );
-  }
-
-  // 6. Insert Memorization Track Standards
-  const memorization = [
+const MEMORIZATION_STANDARDS = [
     // Grade 1
     { grade: 1, term: 1, surah: 'Al-Lahab', dua: '4th & 5th Kalimah; Takbīr Taḥrīmah', names: 'Names 1–3' },
     { grade: 1, term: 2, surah: 'An-Naṣr', dua: 'Duʿā\' al-Istiftāḥ; Tasbīḥ of rukūʿ; after rukūʿ', names: 'Names 4–6' },
@@ -336,59 +255,6 @@ async function seedDatabase() {
     { grade: 6, term: 2, surah: 'Last 2 āyāt of al-Ḥashr', dua: 'Returning from a journey; farewell; in the marketplace', names: 'Names 5–8' },
     { grade: 6, term: 3, surah: 'Sūrah Yāsīn — Rukūʿ 1', dua: 'Wearing new clothes; seeing another in new clothes; removing fear before sleep', names: 'Names 9–11' },
     { grade: 6, term: 4, surah: 'Sūrah Yāsīn — Rukūʿ 2–3; consolidate', dua: 'Waking during the night; intending to enter a town or city', names: 'Names 12–15 (15 total)' },
-  ];
+];
 
-  for (const m of memorization) {
-    await run(
-      `INSERT INTO memorization_standards (grade, term_number, surah, dua, names_of_allah)
-       VALUES (?, ?, ?, ?, ?)`,
-      [m.grade, m.term, m.surah, m.dua, m.names]
-    );
-  }
-
-  // 7. Insert Sample Realistic Recent Logs
-  const sampleLogs = [
-    // Grade 1 Boys
-    { class_id: 1, date: '2026-08-10', day: 'Monday', subject: 'Fiqh', teacher: 'Ustadh Ahmad', type: 'standard_lesson', topic: 'Intro to Fiqh; the Five Pillars of Islam; the Shahādah', indicator: 'Name the five pillars; recite and explain the Shahādah', mem: 'Al-Lahab, 4th Kalimah', status: 'completed', mastery: 'mastered', notes: 'All boys recited the 5 pillars.' },
-    { class_id: 1, date: '2026-08-11', day: 'Tuesday', subject: 'Aḥādīth', teacher: 'Ustadh Ahmad', type: 'standard_lesson', topic: 'Intro to Ḥadīth; Ḥadīth 1 (Feeding the hungry)', indicator: 'Recite Ḥadīth 1 with its meaning', mem: 'Al-Lahab (full recitation)', status: 'completed', mastery: 'mastered', notes: 'Hadith memorized with translation.' },
-    
-    // Grade 1 Girls
-    { class_id: 2, date: '2026-08-10', day: 'Monday', subject: 'Fiqh', teacher: 'Ustadha Maryam', type: 'standard_lesson', topic: 'Intro to Fiqh; the Five Pillars of Islam; the Shahādah', indicator: 'Name the five pillars; recite and explain the Shahādah', mem: 'Al-Lahab, 4th Kalimah', status: 'completed', mastery: 'mastered', notes: 'Engaged discussion on Shahadah.' },
-    
-    // Grade 2 Boys
-    { class_id: 3, date: '2026-08-10', day: 'Monday', subject: 'Fiqh', teacher: 'Ustadh Bilal', type: 'practical_demo', topic: 'Keeping clean / Wuḍū\'; key words of wuḍū\'', indicator: "Define wuḍū' key terms; describe staying clean", mem: 'Al-Kawthar, Iman Mujmal', status: 'completed', mastery: 'mastered', notes: 'Practical demonstration in the ablution area.' },
-    
-    // Grade 2 Girls
-    { class_id: 4, date: '2026-08-10', day: 'Monday', subject: 'Fiqh', teacher: 'Ustadha Zainab', type: 'standard_lesson', topic: 'Keeping clean / Wuḍū\'; key words of wuḍū\'', indicator: "Define wuḍū' key terms; describe staying clean", mem: 'Al-Kawthar', status: 'completed', mastery: 'mastered', notes: 'Cleanliness rules explained.' },
-
-    // Grade 3 Boys
-    { class_id: 5, date: '2026-08-10', day: 'Monday', subject: 'Fiqh', teacher: 'Ustadh Tariq', type: 'standard_lesson', topic: 'Key words of Fiqh; types of najāsah; ghusl (farā\'iḍ & sunan)', indicator: 'Define Fiqh terms; identify najāsah; perform ghusl', mem: 'Al-Asr, Dua for parents', status: 'completed', mastery: 'mastered', notes: 'Ghusl faraiḍ listed on whiteboard.' },
-
-    // Grade 6 Boys
-    { class_id: 11, date: '2026-08-10', day: 'Monday', subject: 'Fiqh', teacher: 'Ustadh Umar', type: 'standard_lesson', topic: 'Types of water; impurities and cleaning methods', indicator: 'Classify types of water and methods of cleaning impurities', mem: 'Kahf v1-5, Sayyid al-Istighfar', status: 'completed', mastery: 'mastered', notes: 'Tahur vs tahir explained.' },
-
-    // Grade 6 Girls
-    { class_id: 12, date: '2026-08-10', day: 'Monday', subject: 'Fiqh', teacher: 'Ustadha Safiyyah', type: 'standard_lesson', topic: 'Types of water; impurities and cleaning methods', indicator: 'Classify types of water and methods of cleaning impurities', mem: 'Kahf v1-5, Sayyid al-Istighfar', status: 'completed', mastery: 'mastered', notes: 'Water classifications completed.' }
-  ];
-
-  for (const l of sampleLogs) {
-    await run(
-      `INSERT INTO lesson_logs (class_id, date, day_of_week, subject, session_type, teacher_name, topic_covered, expected_indicator, memorization_covered, status, mastery_level, notes)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [l.class_id, l.date, l.day, l.subject, l.type, l.teacher, l.topic, l.indicator, l.mem, l.status, l.mastery, l.notes]
-    );
-  }
-
-  console.log('Database seeded successfully with 12 Grade & Gender split classes!');
-}
-
-if (require.main === module) {
-  seedDatabase()
-    .then(() => process.exit(0))
-    .catch((err) => {
-      console.error('Seeding error:', err);
-      process.exit(1);
-    });
-}
-
-module.exports = seedDatabase;
+module.exports = { TERMS, CURRICULUM_TOPICS, MEMORIZATION_STANDARDS };
