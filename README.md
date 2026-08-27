@@ -232,11 +232,35 @@ from a red build.
 
 ### 1. A public link for feedback — GitHub Pages
 
-The workflow builds the self-contained demo and publishes it to GitHub Pages at:
+The workflow builds the self-contained demo and publishes it to GitHub Pages.
+**The live URL is:**
 
 ```
-https://shadmanahmed001.github.io/icf-maktab-tracker/
+https://shadmanahmed.info/icf-maktab-tracker/
 ```
+
+Note that this is the *custom domain*, not `shadmanahmed001.github.io/...`.
+Because the user site (`shadmanahmed001.github.io`) has a `CNAME` of
+`shadmanahmed.info`, GitHub serves every project site of this account under that
+domain too, and 301-redirects the `github.io` address to it. Both addresses work;
+the custom-domain one is what to hand to testers, since it is where they land.
+
+**Three settings have to be right, and two of them fail silently:**
+
+1. **The repository must be public.** On GitHub Free, Pages is only available for
+   public repositories. While the repo is private, choosing a Pages source
+   appears to succeed in the UI but is *not saved* — `has_pages` stays `false`
+   and the workflow's deploy steps skip. Make the repo public *first*, then set
+   the source; doing it in the other order silently does nothing.
+2. **Settings → Pages → Source → GitHub Actions.** A workflow token is not
+   allowed to create a Pages site, whatever permissions it requests, so this is
+   a one-time manual step.
+3. **The `github-pages` environment must allow this branch.** The publish job
+   runs with `environment: github-pages`, and GitHub creates that environment
+   restricted to the default branch. Publishing from a `claude/**` branch needs
+   the branch added under *Settings → Environments → github-pages → Deployment
+   branches and tags*, or the deploy fails with "Branch is not allowed to deploy
+   to github-pages due to environment protection rules".
 
 Anyone with the link can walk all three portals — no account, no install. The
 sign-in screen lists the demo accounts and the password. Because it is a static
