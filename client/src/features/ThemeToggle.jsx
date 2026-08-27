@@ -14,7 +14,10 @@ import { useTheme } from '../lib/theme';
 import { cx } from '../ui';
 
 export function ThemeToggle({ className, compact = false }) {
-  const { isDark, toggle } = useTheme();
+  const theme = useTheme();
+  // No provider above us: show nothing rather than break the screen.
+  if (!theme) return null;
+  const { isDark, toggle } = theme;
 
   // Name the destination, not the current state: pressing it is the whole
   // point, and "Switch to light mode" cannot be misread the way a moon can.

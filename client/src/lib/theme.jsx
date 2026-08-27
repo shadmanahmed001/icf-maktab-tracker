@@ -95,8 +95,20 @@ export function ThemeProvider({ children }) {
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 }
 
+/**
+ * Appearance state, or null if no provider is above this component.
+ *
+ * Returning null rather than throwing is deliberate. There is more than one
+ * entry point into this app — the server-rendered client and the static demo
+ * bundle each mount their own tree — and an earlier version of this threw,
+ * which meant forgetting the provider in one of them replaced the whole
+ * application with a blank page. A missing provider should cost the theme
+ * switch, not the maktab's records. Callers render nothing when this is null.
+ */
 export function useTheme() {
   const context = useContext(ThemeContext);
-  if (!context) throw new Error('useTheme must be used inside a ThemeProvider');
+  if (!context && import.meta.env?.DEV) {
+    console.warn('[theme] useTheme() called with no ThemeProvider above it — the appearance switch will be hidden.');
+  }
   return context;
 }

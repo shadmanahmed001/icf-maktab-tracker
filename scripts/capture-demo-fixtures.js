@@ -132,7 +132,7 @@ async function main() {
   for (const c of classes) {
     await record('admin', admin, `/admin/classes/${c.id}/detail`);
   }
-  // One pupil per class — enough to reach the screen from every class page.
+  // One student per class — enough to reach the screen from every class page.
   const students = fixtures.responses['admin|/admin/students'];
   const seenClasses = new Set();
   for (const s of students) {
@@ -229,7 +229,7 @@ async function main() {
   // login screen can never offer one it has no data for.
   const hint = {
     admin: 'Full oversight of every grade',
-    teacher: 'Daily check-off for their own class',
+    teacher: 'Daily log for their own class',
     parent: "Their own children's progress only",
   };
   fixtures.responses['public|/auth/demo-accounts'] = {

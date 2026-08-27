@@ -12,10 +12,13 @@ import { HashRouter } from 'react-router-dom';
 import './index.css';
 import App from './App.jsx';
 import { DemoBanner } from './demo/DemoBanner.jsx';
+import { ThemeProvider } from './lib/theme';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <DemoBanner />
-    <App Router={HashRouter} />
+    <ThemeProvider>
+      <DemoBanner />
+      <App Router={HashRouter} />
+    </ThemeProvider>
   </StrictMode>
 );

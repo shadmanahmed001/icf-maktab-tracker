@@ -26,7 +26,7 @@ const ROUTES = {
     ['#/admin', ['Pacing radar', 'On track']],
     ['#/admin/pacing', ['Pacing radar']],
     ['#/admin/classes', ['Grade 1 Boys']],
-    ['#/admin/students', ['pupils']],
+    ['#/admin/students', ['students']],
     ['#/admin/people', ['Staff & families']],
     ['#/admin/curriculum', ['Memorization target']],
     ['#/admin/calendar', ['Active term']],
@@ -35,11 +35,11 @@ const ROUTES = {
     ['#/admin/activity', ['Activity log']],
   ],
   teacher: [
-    ['#/teacher', ['check-off', 'Where the class stands', 'From the office']],
+    ['#/teacher', ["Today's lesson", 'Where the class stands', 'From the office']],
     ['#/teacher/attendance', ['All present']],
     // Pupils, the syllabus and homework are tabs of one "My class" page now.
-    ['#/teacher/roster', ['My class', 'Pupils & progress']],
-    ['#/teacher/roster?tab=syllabus', ['My class', 'The five strands']],
+    ['#/teacher/roster', ['My class', 'Students & progress']],
+    ['#/teacher/roster?tab=syllabus', ['My class', 'The five subjects']],
     ['#/teacher/roster?tab=homework', ['My class', 'Set homework']],
     ['#/teacher/messages', ['Parent messages']],
     ['#/teacher/notices', ['Notices']],
@@ -47,7 +47,7 @@ const ROUTES = {
   ],
   parent: [
     ['#/family', ['is doing', 'What the teacher says', 'Attendance', 'Memorization']],
-    ['#/family/report', ['Attainment by strand']],
+    ['#/family/report', ['Progress by subject']],
     ['#/family/memorization', ['Memorization']],
     ['#/family/lessons', ['Lessons covered']],
     ['#/family/attendance', ['Session by session']],
