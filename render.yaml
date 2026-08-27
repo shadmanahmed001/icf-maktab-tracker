@@ -1,30 +1,59 @@
+# Render blueprint — deploys the pre-built container image for this branch.
+#
+# The image is published to GHCR by .github/workflows/deploy.yml on every push
+# to `main` or a `claude/**` branch, so a deploy here is a pull, not a build.
+# The tag is the branch name with slashes replaced by dashes.
+#
+#   Blueprint:  New → Blueprint → point at this repo and branch
+#   Or by hand: New → Web Service → Existing image, with the env vars below
+#
+# ── The free plan, plainly ───────────────────────────────────────────────────
+# Two limits that matter for a pilot, both inherent to the plan:
+#
+#   1. No persistent disk. The filesystem is ephemeral, and a free instance is
+#      destroyed both on redeploy AND when it wakes from sleep. Anything a
+#      tester enters is gone by the next cold start. The database is rebuilt
+#      and reseeded from the seed data each time, so the app always comes back
+#      usable — but it comes back empty of test data.
+#   2. It sleeps after ~15 minutes of inactivity, so the first request after a
+#      quiet spell takes 30–60 seconds.
+#
+# Fine for "click through it and tell me what you think". Not fine for real
+# records, and not fine for a tester who expects yesterday's entry to still be
+# there. To fix both, move to a paid instance and attach a disk — uncomment the
+# `disk:` block and the DB_PATH var below, and raise `plan`.
 services:
   - type: web
     name: icf-maktab-tracker
-    runtime: node
+    runtime: image
+    image:
+      url: ghcr.io/shadmanahmed001/icf-maktab-tracker:claude-portals-admin-teacher-parent-bxjw1q
     plan: free
     region: oregon
-    buildCommand: npm install && npm run build
-    startCommand: npm start
+    # The server returns {"status":"ok"} here once the database is seeded, so
+    # Render will not route traffic to a half-booted instance.
     healthCheckPath: /health
     envVars:
-      - key: NODE_VERSION
-        value: 22.14.0
       - key: NODE_ENV
         value: production
-      - key: PORT
-        value: 10000
-      # Generated once by Render and kept across deploys, so sessions survive
-      # a restart.
+      # Generated once by Render and held across deploys, so sessions are not
+      # invalidated by a restart. Never commit a real value here.
       - key: JWT_SECRET
         generateValue: true
-      # The free plan has no persistent disk, so the database is rebuilt and
-      # reseeded on each deploy. Attach a disk (below) for a real rollout.
+      # Keeps the seeded account list on the sign-in screen so testers can get
+      # in without being issued credentials. Set to false before real families
+      # use this, and reseed with your own roll.
       - key: DEMO_MODE
-        value: true
-    # Uncomment for a paid plan to keep data across deploys:
+        value: "true"
+    # Render injects PORT (10000) and the server honours it; setting it here
+    # would only risk disagreeing with the platform.
+
+    # ── For a pilot with real records: paid instance + disk ──────────────────
+    # Persistence needs both of these, together with plan: starter above.
     # disk:
     #   name: maktab-data
     #   mountPath: /var/data
     #   sizeGB: 1
-    # and set DB_PATH=/var/data/maktab.db
+    # and add to envVars:
+    #   - key: DB_PATH
+    #     value: /var/data/maktab.db

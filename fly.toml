@@ -1,0 +1,67 @@
+# Fly.io deployment for the ICF Maktab Tracker.
+#
+# Deploys the pre-built image from GHCR (published by
+# .github/workflows/deploy.yml), so a deploy is a pull, not a build:
+#
+#   fly deploy --image ghcr.io/shadmanahmed001/icf-maktab-tracker:<branch-tag>
+#
+# Chosen over Render's free plan for one reason: a persistent volume. The whole
+# maktab record is a single SQLite file, so the volume mounted at /data is the
+# entire database — and it survives both a redeploy and a machine stopping and
+# restarting. On Render's free plan the filesystem is ephemeral and is wiped
+# whenever the instance wakes from sleep, which loses anything a tester entered.
+#
+# First-time setup (once per app):
+#   fly apps create icf-maktab-tracker
+#   fly volumes create maktab_data --size 1 --region sjc --yes
+#   fly secrets set JWT_SECRET="$(openssl rand -hex 32)"
+#   fly deploy --image <image>
+
+app = 'icf-maktab-tracker'
+primary_region = 'sjc'
+
+[build]
+  # No build context: the image is prebuilt and passed with `fly deploy --image`.
+
+[env]
+  NODE_ENV = 'production'
+  PORT = '3000'
+  # The database lives on the mounted volume, NOT in the image layer. This is
+  # the single setting that makes data survive a redeploy.
+  DB_PATH = '/data/maktab.db'
+  # Keeps the seeded account list on the sign-in screen so testers can get in
+  # without being issued credentials. Set to false before real families use it.
+  DEMO_MODE = 'true'
+
+# JWT_SECRET is a secret, not an env var — set with `fly secrets set`, never
+# committed. Without it the server generates one and stores it in the database,
+# which works for a single machine but breaks sessions across a reseed.
+
+[[mounts]]
+  source = 'maktab_data'
+  destination = '/data'
+
+[http_service]
+  internal_port = 3000
+  force_https = true
+  # Machines stop when idle and start on the next request. The volume persists
+  # across that, so a cold start costs a few seconds of latency, not data.
+  auto_stop_machines = 'stop'
+  auto_start_machines = true
+  # One machine, because a volume attaches to exactly one machine and SQLite
+  # wants a single writer. Do not scale this past 1 without moving the database.
+  min_machines_running = 0
+
+  [[http_service.checks]]
+    interval = '15s'
+    timeout = '4s'
+    grace_period = '20s'
+    method = 'GET'
+    path = '/health'
+
+[[vm]]
+  # sql.js loads the whole database into WebAssembly memory, so give it real
+  # headroom; 256MB is enough for this roll but leaves little slack.
+  memory = '512mb'
+  cpu_kind = 'shared'
+  cpus = 1

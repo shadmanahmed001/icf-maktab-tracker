@@ -298,14 +298,42 @@ JWT_SECRET="$(openssl rand -hex 32)" DEMO_MODE=false \
 pm2 save
 ```
 
-### Render
+### Hosting the branch for testers — Fly.io
 
-`render.yaml` is a blueprint for a one-click deploy, and generates `JWT_SECRET`
-for you. Two things to know about the free plan: there is **no persistent disk**,
-so the database is rebuilt and reseeded on every deploy, and the instance sleeps
-after inactivity, so the first request takes around a minute. Fine for a
-demonstration, not for real records — for those, attach a disk and point
-`DB_PATH` at it (both are commented in the file).
+[`fly.toml`](fly.toml) deploys the **prebuilt GHCR image** onto a machine with a
+**persistent volume**, which is what makes it usable for a pilot rather than a
+click-through. The whole record is one SQLite file, so the volume mounted at
+`/data` *is* the database, and it survives both a redeploy and a machine
+stopping and restarting.
+
+```bash
+fly apps create icf-maktab-tracker
+fly volumes create maktab_data --size 1 --region sjc --yes
+fly secrets set JWT_SECRET="$(openssl rand -hex 32)"
+fly deploy --image ghcr.io/shadmanahmed001/icf-maktab-tracker:claude-portals-admin-teacher-parent-bxjw1q
+```
+
+`DB_PATH=/data/maktab.db` in `fly.toml` is the setting that puts the database on
+the volume instead of in the image layer — without it, every deploy starts from
+a fresh seed. Machines idle down and start again on the next request, so a first
+request after a quiet spell costs a few seconds of latency but **not** data.
+
+Keep it to **one machine**: a volume attaches to a single machine, and SQLite
+wants a single writer. Scaling past 1 needs the database moved first.
+
+### Render — why not, on the free plan
+
+`render.yaml` is a working blueprint (now pointing at the same prebuilt image
+rather than building from source), but the free plan **cannot keep data**. The
+filesystem is ephemeral and the instance is destroyed not only on redeploy but
+every time it **wakes from sleep** after ~15 minutes idle — so anything a tester
+enters is gone by the next cold start, and the sign-in screen greets them with a
+freshly reseeded school. It also costs 30–60 seconds on that first request.
+
+That is fine for gathering reactions to the design, and wrong for a pilot where
+somebody enters attendance and expects to find it tomorrow. Persistence on
+Render needs a paid instance **and** an attached disk — the `disk:` block and
+`DB_PATH` are commented in the file for that.
 
 ### Behind a reverse proxy
 
