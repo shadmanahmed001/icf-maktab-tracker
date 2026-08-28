@@ -2,7 +2,7 @@
  * API client.
  *
  * Wraps fetch with the two things every call needs: the CSRF token the server
- * expects on cookie-authenticated writes, and error normalisation so screens
+ * expects on cookie-authenticated writes, and error normalization so screens
  * can show the server's own message instead of a status code.
  */
 

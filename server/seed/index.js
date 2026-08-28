@@ -51,7 +51,7 @@ const TEACHERS = [
 ];
 
 /**
- * Per-class behaviour profiles, so the pacing dashboard shows a realistic
+ * Per-class behavior profiles, so the pacing dashboard shows a realistic
  * spread instead of every class sitting at the same number. `diligence` drives
  * how reliably the class logs its daily log.
  */
@@ -133,7 +133,7 @@ function seedStaff(today) {
       `INSERT INTO classes (name, grade, gender_track, academic_year, room)
        VALUES (?, ?, ?, '2026-2027', ?)`,
       // Lower grades on the first floor, upper grades on the second; boys odd,
-      // girls even — matching how the rooms are actually numbered at the centre.
+      // girls even — matching how the rooms are actually numbered at the center.
       [key, t.grade, t.track, `Room ${t.grade < 4 ? 1 : 2}${t.grade}${t.track === 'boys' ? 1 : 2}`]
     );
     classIds[key] = classResult.lastID;
@@ -411,7 +411,7 @@ const SUBJECTS_BY_TERM = {
 function seedStudentProgress(term, classIds, teacherIds, today) {
   const subjects = SUBJECTS_BY_TERM[term.term_number] || SUBJECTS_BY_TERM[1];
 
-  // A teacher records a judgement on a day they were teaching, so draw the
+  // A teacher records a judgment on a day they were teaching, so draw the
   // dates from the term's actual teaching days rather than the calendar.
   const teachingDays = teachingDaysBetween(
     term.start_date, today < term.end_date ? today : term.end_date
@@ -540,7 +540,7 @@ function seedHomework(classIds, teacherIds, today) {
         `INSERT INTO homework (class_id, subject, title, instructions, assigned_date, due_date, created_by)
          VALUES (?, ?, ?, ?, ?, ?, ?)`,
         [classId, item.subject, item.title,
-          'Please practise with your child at home and sign the workbook page.',
+          'Please practice with your child at home and sign the workbook page.',
           addDays(today, item.days), addDays(today, item.due), teacherIds[key]]
       );
     }

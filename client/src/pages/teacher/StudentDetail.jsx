@@ -71,13 +71,13 @@ export default function TeacherStudentDetail() {
                 <Card className="lg:col-span-2">
                   <SectionHeading
                     title="Progress by subject"
-                    description="Your judgement for this term. Tap a subject to record or change it."
+                    description="Your judgment for this term. Tap a subject to record or change it."
                     action={<MasteryScaleLegend />}
                   />
                   <AssessmentTable
                     assessments={assessments}
                     onEdit={(row) => setAssessing({ ...row, term_number: term.term_number })}
-                    emptyHint="Record your first judgement using the buttons below."
+                    emptyHint="Record your first judgment using the buttons below."
                   />
 
                   <div className="mt-4">
@@ -200,7 +200,7 @@ function AssessmentDialog({ studentId, value, onChange, onClose, onSaved }) {
       open
       onClose={onClose}
       title={value.subject}
-      description="Your judgement of where this student stands on this subject for the term."
+      description="Your judgment of where this student stands on this subject for the term."
       footer={(
         <>
           <Button variant="secondary" onClick={onClose} disabled={save.busy}>Cancel</Button>

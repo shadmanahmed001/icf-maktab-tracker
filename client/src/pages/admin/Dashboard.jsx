@@ -13,7 +13,7 @@ import {
   Table, TableWrap, Td, Th, Tr, Dot,
 } from '../../ui';
 import { CompositionBar, PacingBar, StatTile } from '../../charts';
-import { ATTENDANCE, LESSON_STATUS, PACING, longDate, percent, pluralise, relativeDay } from '../../lib/format';
+import { ATTENDANCE, LESSON_STATUS, PACING, longDate, percent, pluralize, relativeDay } from '../../lib/format';
 
 export default function AdminDashboard() {
   const query = useApi(() => api.admin.dashboard(), []);
@@ -64,7 +64,7 @@ export default function AdminDashboard() {
               <StatTile
                 label="Students enrolled"
                 value={stats.students}
-                sublabel={`${pluralise(stats.teachers, 'teacher')} · ${pluralise(stats.parents, 'parent account')}`}
+                sublabel={`${pluralize(stats.teachers, 'teacher')} · ${pluralize(stats.parents, 'parent account')}`}
                 icon={<GraduationCap size={17} />}
               />
               <StatTile
@@ -351,12 +351,12 @@ function SetupGaps({ setup }) {
           >
             <div className="min-w-0 flex-1">
               <p className="text-[0.85rem] font-semibold" style={{ color: 'var(--text-strong)' }}>
-                {pluralise(neverSignedIn, 'account has', 'accounts have')} never been used
+                {pluralize(neverSignedIn, 'account has', 'accounts have')} never been used
               </p>
               <p className="text-[0.79rem]" style={{ color: 'var(--text-muted)' }}>
                 {[
-                  setup.teachersNeverSignedIn && pluralise(setup.teachersNeverSignedIn, 'staff member'),
-                  setup.parentsNeverSignedIn && pluralise(setup.parentsNeverSignedIn, 'parent'),
+                  setup.teachersNeverSignedIn && pluralize(setup.teachersNeverSignedIn, 'staff member'),
+                  setup.parentsNeverSignedIn && pluralize(setup.parentsNeverSignedIn, 'parent'),
                 ].filter(Boolean).join(' and ')}. They may still need their temporary password —
                 you can reissue one at any time.
               </p>

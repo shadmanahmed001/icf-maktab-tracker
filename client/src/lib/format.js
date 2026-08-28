@@ -196,5 +196,5 @@ export const fullName = (person) => (person
 
 export const percent = (value) => (value === null || value === undefined ? '—' : `${Math.round(value)}%`);
 
-export const pluralise = (count, singular, plural) =>
+export const pluralize = (count, singular, plural) =>
   `${count} ${count === 1 ? singular : (plural || `${singular}s`)}`;

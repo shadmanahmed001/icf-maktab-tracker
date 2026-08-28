@@ -2,13 +2,13 @@
  * SQLite access layer built on sql.js (WebAssembly).
  *
  * sql.js keeps the whole database in memory and hands back a byte array on
- * export, so persistence is "serialise the file and replace it on disk". Two
+ * export, so persistence is "serialize the file and replace it on disk". Two
  * things matter for that to be safe in production:
  *
  *   1. Writes are atomic — we render to a temp file in the same directory and
  *      rename it over the target, so a crash mid-write cannot truncate the
  *      live database.
- *   2. Bulk work does not pay per-statement serialisation cost — `transaction()`
+ *   2. Bulk work does not pay per-statement serialization cost — `transaction()`
  *      suspends persistence, runs inside a real SQL transaction, and flushes
  *      once at the end.
  *
@@ -26,7 +26,7 @@ let dirty = false;
 let suspendDepth = 0;
 
 function assertReady() {
-  if (!db) throw new Error('Database not initialised — await initDb() during startup');
+  if (!db) throw new Error('Database not initialized — await initDb() during startup');
   return db;
 }
 
@@ -47,7 +47,7 @@ async function initDb() {
   return db;
 }
 
-/** Serialise the in-memory database over the on-disk file, atomically. */
+/** Serialize the in-memory database over the on-disk file, atomically. */
 function flush() {
   if (!db || !dirty) return;
   const tmp = `${DB_PATH}.${process.pid}.tmp`;
@@ -67,7 +67,7 @@ function markDirty() {
 }
 
 /**
- * sql.js accepts either positional arrays or `:name` objects. Normalise both,
+ * sql.js accepts either positional arrays or `:name` objects. Normalize both,
  * and coerce `undefined` to `null` so a missing optional field binds cleanly
  * instead of throwing.
  */

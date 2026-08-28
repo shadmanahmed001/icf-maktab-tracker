@@ -8,7 +8,7 @@
  * screen may be left painting one scheme's text on the other scheme's ground.
  *
  * It walks every route in the route table rather than a sample, because the
- * defect this guards against — a colour hard-coded in one component — shows up
+ * defect this guards against — a color hard-coded in one component — shows up
  * on exactly one screen and nowhere else.
  *
  * Run with: node tests/theme.test.js
@@ -47,7 +47,7 @@ const ROUTES = {
   ],
 };
 
-// ── colour maths, so "legible" is a number and not an opinion ────────────────
+// ── color maths, so "legible" is a number and not an opinion ────────────────
 
 function parseColor(value) {
   const m = String(value).match(/rgba?\(([^)]+)\)/);
@@ -203,7 +203,7 @@ async function main() {
           readings[want] = await page.evaluate(() => {
             const body = getComputedStyle(document.body);
             // Sample the real text nodes rather than a token, so a component
-            // that hard-codes a colour is caught.
+            // that hard-codes a color is caught.
             const nodes = [...document.querySelectorAll('p, td, th, h1, h2, h3, span, label, li')]
               .filter((el) => {
                 const t = (el.textContent || '').trim();

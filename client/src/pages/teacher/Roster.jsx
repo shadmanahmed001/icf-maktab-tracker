@@ -10,7 +10,7 @@ import {
   Table, TableWrap, Td, Th, Tr, Avatar,
 } from '../../ui';
 import { BandDistribution } from '../../charts';
-import { percent, pluralise } from '../../lib/format';
+import { percent, pluralize } from '../../lib/format';
 
 export default function StudentsPanel() {
   const { selectedId } = useSelectedClass();
@@ -62,8 +62,8 @@ export default function StudentsPanel() {
                   </p>
                   <ul className="space-y-1.5 text-[0.82rem]" style={{ color: 'var(--text-body)' }}>
                     <li>
-                      {pluralise(roster.length, 'student')} on the class list,{' '}
-                      {pluralise(assessedTotal, 'subject assessment')} recorded.
+                      {pluralize(roster.length, 'student')} on the class list,{' '}
+                      {pluralize(assessedTotal, 'subject assessment')} recorded.
                     </li>
                     <li>
                       {lowAttendance.length === 0
@@ -75,7 +75,7 @@ export default function StudentsPanel() {
                       {(() => {
                         const none = roster.filter((s) => s.memorizedCount === 0).length;
                         if (none === 0) return 'Every student has mastered at least one memorization item.';
-                        return `${pluralise(none, 'student has', 'students have')} not yet mastered any `
+                        return `${pluralize(none, 'student has', 'students have')} not yet mastered any `
                           + 'memorization item this term.';
                       })()}
                     </li>

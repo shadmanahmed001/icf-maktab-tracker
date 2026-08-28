@@ -63,7 +63,7 @@ function classLogsInTerm(classId, term) {
  *
  * A term holds five standards — one per strand — and each is taught across the
  * whole term, roughly nine sessions. So a completed lesson log does not by
- * itself finish a standard: the teacher's mastery judgement on that log is what
+ * itself finish a standard: the teacher's mastery judgment on that log is what
  * marks it achieved. Any log against a standard means teaching is under way.
  */
 function coverageFor(topics, logs) {

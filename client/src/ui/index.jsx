@@ -19,7 +19,7 @@ const cx = (...parts) => parts.filter(Boolean).join(' ');
  *   mark — chart fills and dots, contrast-checked against the card surface
  *   soft — the tinted background behind a badge
  * Using `ink` for a chart fill or `mark` for small text is what breaks
- * legibility in one of the two colour schemes, so the split is deliberate.
+ * legibility in one of the two color schemes, so the split is deliberate.
  */
 const TONE_VARS = {
   ok: { ink: 'var(--ok-ink)', mark: 'var(--ok)', bg: 'var(--ok-soft)' },
@@ -32,9 +32,9 @@ const TONE_VARS = {
 
 const tone_ = (tone) => TONE_VARS[tone] || TONE_VARS.neutral;
 
-/** Label text colour for a tone. */
+/** Label text color for a tone. */
 export const toneColor = (tone) => tone_(tone).ink;
-/** Chart mark / fill colour for a tone. */
+/** Chart mark / fill color for a tone. */
 export const toneMark = (tone) => tone_(tone).mark;
 export const toneBackground = (tone) => tone_(tone).bg;
 
@@ -201,7 +201,7 @@ export function Badge({ tone = 'neutral', size = 'md', icon, className, children
   );
 }
 
-/** A small coloured dot — used where a badge would be too heavy. */
+/** A small colored dot — used where a badge would be too heavy. */
 export function Dot({ tone = 'neutral', size = 8, className }) {
   return (
     <span

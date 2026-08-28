@@ -2,7 +2,7 @@
  * The message inbox, shared by teachers and parents.
  *
  * Both sides see the same conversation about the same child, so the component
- * is one piece of code parameterised by an adapter — which list endpoint to
+ * is one piece of code parameterized by an adapter — which list endpoint to
  * call, which reply endpoint, and how to label the other party.
  */
 import { useEffect, useRef, useState } from 'react';

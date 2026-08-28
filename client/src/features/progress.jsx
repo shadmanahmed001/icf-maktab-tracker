@@ -281,7 +281,7 @@ export function LessonHistoryList({ lessons, className, showTeacher = true }) {
 /**
  * What the teacher has written about this child, presented as remarks rather
  * than as a column of a results table. Parents come looking for exactly this,
- * so it reads as prose with the subject and the judgement attached.
+ * so it reads as prose with the subject and the judgment attached.
  */
 export function TeacherComments({ assessments, childName, className }) {
   const withComments = (assessments || []).filter((a) => a.comment && a.comment.trim());
@@ -335,7 +335,7 @@ export function TeacherComments({ assessments, childName, className }) {
   );
 }
 
-/** The mark colour for an progress band, used for the remark's edge stripe. */
+/** The mark color for an progress band, used for the remark's edge stripe. */
 function markForLevel(level) {
   const tone = MASTERY[level]?.tone || 'neutral';
   return `var(--${tone})`;

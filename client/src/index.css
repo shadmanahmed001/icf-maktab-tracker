@@ -9,7 +9,7 @@
  *   teacher → emerald   (daily practice)
  *   parent  → indigo    (family)
  *
- * Every colour below has a dark-scheme counterpart, so the whole app follows
+ * Every color below has a dark-scheme counterpart, so the whole app follows
  * the reader's system setting. Components use these tokens rather than raw
  * palette values, which is what keeps light and dark consistent.
  */
@@ -42,12 +42,12 @@
   --accent-text: #115e59;
 
   /*
-   * Status colours. Two roles, because they have different contrast duties:
+   * Status colors. Two roles, because they have different contrast duties:
    *   --x       chart marks — validated for the OKLCH lightness band, chroma
-   *             floor and adjacent colour-vision separation against the card
+   *             floor and adjacent color-vision separation against the card
    *             surface (see scripts/validate_palette.js in the dataviz skill).
    *   --x-ink   text and badge labels — checked for WCAG AA against --x-soft.
-   * In the light scheme the mark colours are dark enough to double as ink,
+   * In the light scheme the mark colors are dark enough to double as ink,
    * except amber, which needs a darker step to stay legible.
    */
   --ok: #047857;
@@ -94,7 +94,7 @@
  * for the explicit dark stamp so a toggle wins in either direction.
  *
  * Every value below is a token redefinition. No component style lives in here:
- * a colour whose only definition sits behind a media query or a [data-theme]
+ * a color whose only definition sits behind a media query or a [data-theme]
  * selector never applies in the unstamped state, which is how a page ends up
  * rendering one theme's text on the other theme's ground.
  */

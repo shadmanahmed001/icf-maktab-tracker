@@ -110,7 +110,7 @@ export default function AdminStudentDetail() {
               <Card className="mt-5">
                 <SectionHeading
                   title={`Progress — ${term.title}`}
-                  description="One judgement per subject, recorded by the class teacher."
+                  description="One judgment per subject, recorded by the class teacher."
                   action={<MasteryScaleLegend />}
                 />
                 <AssessmentTable assessments={assessments} />

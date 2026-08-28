@@ -1,5 +1,5 @@
 /**
- * Authentication and authorisation.
+ * Authentication and authorization.
  *
  * Sessions are stateless JWTs delivered in an httpOnly cookie, with a Bearer
  * header accepted as an alternative for scripted clients. Cookie-authenticated

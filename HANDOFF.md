@@ -14,7 +14,7 @@ SQLite database (WebAssembly, via sql.js) and a Vite React client.
 
 | Portal | For | What they do |
 | :--- | :--- | :--- |
-| Administration | Director, standards coordinator | Pacing across every grade, classes and enrolment, staff and family accounts, the curriculum, reports, board digest |
+| Administration | Director, standards coordinator | Pacing across every grade, classes and enrollment, staff and family accounts, the curriculum, reports, board digest |
 | Teacher | Class teachers, assistants, substitutes | Only their own classes: the daily log, attendance, their students' progress, homework, parent messages |
 | Family | Parents and guardians | Only their own children: progress, attendance, and the teacher's comments |
 
@@ -191,7 +191,7 @@ In rough order of value per unit of effort:
 - **Email or SMS on absence**, so a parent hears the same day.
 - **A substitute view** that does not need an account — a per-class link valid
   for one day.
-- **Bulk enrolment from a spreadsheet**, if the roll turns over enough to make
+- **Bulk enrollment from a spreadsheet**, if the roll turns over enough to make
   hand entry annoying.
 - **Arabic or Urdu interface**, if guardians ask for it.
 

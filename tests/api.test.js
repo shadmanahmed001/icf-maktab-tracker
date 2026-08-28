@@ -26,7 +26,7 @@ const { app } = require('../server/index');
 let baseUrl;
 let server;
 
-/** Minimal cookie-jar HTTP client mirroring the browser's behaviour. */
+/** Minimal cookie-jar HTTP client mirroring the browser's behavior. */
 function createClient() {
   const jar = new Map();
 

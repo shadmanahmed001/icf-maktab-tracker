@@ -1,4 +1,4 @@
-/** What to practise at home, and how far the child has got. */
+/** What to practice at home, and how far the child has got. */
 import { api } from '../../lib/api';
 import { useApi } from '../../lib/hooks';
 import { useSelectedChild } from '../../layout/portals';

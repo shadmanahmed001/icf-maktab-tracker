@@ -143,7 +143,7 @@ export default function HomeworkPanel() {
                 value={creating.instructions}
                 onChange={(e) => setCreating({ ...creating, instructions: e.target.value })}
                 rows={3}
-                placeholder="Please practise with your child and sign the workbook page."
+                placeholder="Please practice with your child and sign the workbook page."
               />
             </Field>
             <div className="grid gap-3 sm:grid-cols-2">

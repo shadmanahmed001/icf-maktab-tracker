@@ -107,7 +107,7 @@ const CURRICULUM_TOPICS = [
     { grade: 2, gender_track: 'general', term: 3, day: 'Friday', subject: 'Akhlāq', topic: 'Spreading Islam; helping in good things', indicator: 'Give examples of helping in good', seq: 3 },
     // Term 4
     { grade: 2, gender_track: 'general', term: 4, day: 'Monday', subject: 'Fiqh', topic: 'Tayammum; the method of ṣalāh (with demonstration); revision', indicator: 'Perform tayammum and the method of ṣalāh', seq: 4 },
-    { grade: 2, gender_track: 'general', term: 4, day: 'Tuesday', subject: 'Aḥādīth', topic: 'Drinking whilst sitting; kindness to neighbours; revision', indicator: 'Recite all five aḥādīth from memory', seq: 4 },
+    { grade: 2, gender_track: 'general', term: 4, day: 'Tuesday', subject: 'Aḥādīth', topic: 'Drinking while sitting; kindness to neighbors; revision', indicator: 'Recite all five aḥādīth from memory', seq: 4 },
     { grade: 2, gender_track: 'general', term: 4, day: 'Wednesday', subject: 'Tārīkh', topic: 'Ṣāliḥ AS (Thamūd); revision', indicator: 'Retell the story of Ṣāliḥ AS and the she-camel', seq: 4 },
     { grade: 2, gender_track: 'general', term: 4, day: 'Thursday', subject: 'ʿAqā\'id', topic: 'Angels & Jibra\'īl; the Books; the Qur\'ān; revision', indicator: 'Explain belief in angels, books, and the Qur\'ān', seq: 4 },
     { grade: 2, gender_track: 'general', term: 4, day: 'Friday', subject: 'Ādāb', topic: 'Kindness to animals; then Ādāb of greeting, entering a house / seeking permission, speaking, sneezing & yawning', indicator: 'Demonstrate the ādāb of greeting and seeking permission', seq: 4 },
@@ -130,7 +130,7 @@ const CURRICULUM_TOPICS = [
     { grade: 3, gender_track: 'general', term: 3, day: 'Tuesday', subject: 'Aḥādīth', topic: 'Ḥadīth 7 (Guests), 8 (Mercy)', indicator: 'Recite and explain Aḥādīth 7–8', seq: 3 },
     { grade: 3, gender_track: 'general', term: 3, day: 'Wednesday', subject: 'Tārīkh', topic: 'Ibrāhīm AS: his life; the idols; the people return; before the king', indicator: 'Narrate Ibrāhīm AS\'s early daʿwah and confrontation', seq: 3 },
     { grade: 3, gender_track: 'general', term: 3, day: 'Thursday', subject: 'ʿAqā\'id', topic: 'Qiyāmah (introduction)', indicator: 'State the basic belief in Qiyāmah', seq: 3 },
-    { grade: 3, gender_track: 'general', term: 3, day: 'Friday', subject: 'Ādāb', topic: 'Saying a good word; Akhlāq revision; then Ādāb of travelling', indicator: 'Consolidate the five akhlāq; state the ādāb of travel', seq: 3 },
+    { grade: 3, gender_track: 'general', term: 3, day: 'Friday', subject: 'Ādāb', topic: 'Saying a good word; Akhlāq revision; then Ādāb of traveling', indicator: 'Consolidate the five akhlāq; state the ādāb of travel', seq: 3 },
     // Term 4
     { grade: 3, gender_track: 'general', term: 4, day: 'Monday', subject: 'Fiqh', topic: 'Ṣalāt al-Witr with Duʿā\' Qunūt; Qaṣr; Ṣalāt al-Marīḍ; revision', indicator: 'Perform Witr with Qunūt; explain Qaṣr and the sick person\'s ṣalāh', seq: 4 },
     { grade: 3, gender_track: 'general', term: 4, day: 'Tuesday', subject: 'Aḥādīth', topic: 'Ḥadīth 9 (Modesty), 10 (Shukr); revision', indicator: 'Recite and explain all ten aḥādīth from memory', seq: 4 },
@@ -162,7 +162,7 @@ const CURRICULUM_TOPICS = [
     { grade: 4, gender_track: 'general', term: 4, day: 'Tuesday', subject: 'Aḥādīth', topic: 'Ḥadīth 10 (Duʿā\'); revision', indicator: 'Recite and explain all ten aḥādīth from memory', seq: 4 },
     { grade: 4, gender_track: 'general', term: 4, day: 'Wednesday', subject: 'Tārīkh', topic: 'Yūsuf AS: guardian of the storehouses; reunion with his father; revision', indicator: 'Complete the story of Yūsuf AS', seq: 4 },
     { grade: 4, gender_track: 'general', term: 4, day: 'Thursday', subject: 'ʿAqā\'id', topic: 'The beast; the sun from the west; the smoke; landslides; Qiyāmah & intercession; the Bridge; revision', indicator: 'Describe the remaining major signs and the Bridge', seq: 4 },
-    { grade: 4, gender_track: 'general', term: 4, day: 'Friday', subject: 'Ādāb', topic: 'Being a good neighbour; then Ādāb of duʿā\', dressing, guests & hosts, gatherings, istinjā\'', indicator: 'Demonstrate the ādāb of duʿā\', dressing, and hosting guests', seq: 4 },
+    { grade: 4, gender_track: 'general', term: 4, day: 'Friday', subject: 'Ādāb', topic: 'Being a good neighbor; then Ādāb of duʿā\', dressing, guests & hosts, gatherings, istinjā\'', indicator: 'Demonstrate the ādāb of duʿā\', dressing, and hosting guests', seq: 4 },
 
     // GRADE 5
     // Term 1
@@ -235,7 +235,7 @@ const MEMORIZATION_STANDARDS = [
     // Grade 3
     { grade: 3, term: 1, surah: 'Al-ʿAṣr; At-Takāthur', dua: 'For parents; entering & leaving the house', names: 'Names 1–3' },
     { grade: 3, term: 2, surah: 'Al-Qāriʿah', dua: 'Qunūt; wearing & taking off clothes', names: 'Names 4–6' },
-    { grade: 3, term: 3, surah: 'Al-ʿĀdiyāt', dua: 'Breaking fast; after Ifṭār; eating at another\'s house; travelling', names: 'Names 7–8' },
+    { grade: 3, term: 3, surah: 'Al-ʿĀdiyāt', dua: 'Breaking fast; after Ifṭār; eating at another\'s house; traveling', names: 'Names 7–8' },
     { grade: 3, term: 4, surah: 'Az-Zalzalah; consolidate all five', dua: 'On seeing a smile; duʿā\' to a host; when it rains; looking in the mirror', names: 'Names 9–10 (10 total)' },
 
     // Grade 4

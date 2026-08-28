@@ -89,7 +89,7 @@ Every lesson also opens with the memorization track — the term's Sūrah, Duʿ�
 and Names of Allāh, set per grade.
 
 The year runs as four teaching terms plus the **Ramaḍān interlude**, which
-introduces no new standards and is excluded from pacing judgements.
+introduces no new standards and is excluded from pacing judgments.
 
 ### What the curriculum contains
 
@@ -224,7 +224,7 @@ npm run demo           # capture → build → page → verify
 | `demo:page` | Strips the document wrapper for publishing, and refuses to emit a page referencing an external host |
 | `demo:verify` | Loads the page in a browser, signs in as each role, walks every screen, and checks all four theme states |
 
-Writes in the demo are applied in the browser and labelled as such — it has no
+Writes in the demo are applied in the browser and labeled as such — it has no
 server behind it and says so.
 
 ---

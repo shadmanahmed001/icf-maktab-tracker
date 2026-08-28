@@ -7,8 +7,8 @@
  * ends anchored to the baseline, a 2px surface gap between adjacent fills, and
  * recessive axes.
  *
- * Colour comes from the validated status tokens via `toneMark`. Every figure
- * carries a text label or legend, so identity is never colour alone.
+ * Color comes from the validated status tokens via `toneMark`. Every figure
+ * carries a text label or legend, so identity is never color alone.
  */
 import { useId, useState } from 'react';
 import { toneMark, toneBackground, cx } from '../ui';
@@ -53,7 +53,7 @@ export function PacingBar({
           }}
         />
         {showExpected && expectedClamped !== null && expectedClamped > 1 && (
-          // A 2px surface-coloured gap keeps the tick legible against the fill.
+          // A 2px surface-colored gap keeps the tick legible against the fill.
           <div
             className="absolute inset-y-0"
             style={{
@@ -377,7 +377,7 @@ export function StatTile({
 /**
  * Mastery across a class. The bands are ordered, so they read left to right in
  * curriculum order with the count stated on each — the ordering carries the
- * meaning, and colour only reinforces it.
+ * meaning, and color only reinforces it.
  */
 export function BandDistribution({ bands, className, height = 34 }) {
   const total = bands.reduce((sum, b) => sum + b.value, 0);

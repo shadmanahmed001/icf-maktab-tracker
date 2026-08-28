@@ -102,7 +102,7 @@ export default function FamilyReportCard() {
 
               <SectionHeading
                 title="Progress by subject"
-                description="Each teacher's judgement against the term's standard."
+                description="Each teacher's judgment against the term's standard."
                 action={<MasteryScaleLegend className="print:hidden" />}
               />
               <AssessmentTable

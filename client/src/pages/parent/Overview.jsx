@@ -20,7 +20,7 @@ import { CompositionBar, PacingBar, ProgressRing } from '../../charts';
 import {
   MemorizationPanel, OverallProgress, TeacherComments,
 } from '../../features/progress';
-import { ATTENDANCE, longDate, mediumDate, pluralise } from '../../lib/format';
+import { ATTENDANCE, longDate, mediumDate, pluralize } from '../../lib/format';
 
 export default function FamilyProgress() {
   const { selectedId } = useSelectedChild();
@@ -72,7 +72,7 @@ export default function FamilyProgress() {
                 className="mb-5"
                 action={<Button as={Link} to="/family/messages" size="sm" variant="secondary">Read</Button>}
               >
-                You have {pluralise(data.unreadMessages, 'unread message')} from the maktab.
+                You have {pluralize(data.unreadMessages, 'unread message')} from the maktab.
               </Alert>
             )}
 
@@ -140,7 +140,7 @@ export default function FamilyProgress() {
                   className="mt-3 w-full"
                   icon={<ChevronRight size={14} />}
                 >
-                  See what to practise
+                  See what to practice
                 </Button>
               </Card>
             </div>

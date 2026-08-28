@@ -1,5 +1,5 @@
 /**
- * The attendance. Optimised for speed: every student defaults to present, so a
+ * The attendance. Optimized for speed: every student defaults to present, so a
  * normal day is "mark the two absences and save". A row of tap targets per
  * student beats a dropdown on a phone.
  */

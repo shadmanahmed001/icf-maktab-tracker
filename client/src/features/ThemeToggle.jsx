@@ -1,8 +1,8 @@
 /**
  * The light / dark switch.
  *
- * Deliberately a labelled two-position switch rather than a bare icon. An
- * unlabelled sun or moon is a small guessing game — does it show the current
+ * Deliberately a labeled two-position switch rather than a bare icon. An
+ * unlabeled sun or moon is a small guessing game — does it show the current
  * state or the one I would get if I pressed it? — and the people using this are
  * teachers on a phone between classes. The label says what pressing it does.
  *
@@ -31,7 +31,7 @@ export function ThemeToggle({ className, compact = false }) {
       aria-label={label}
       title={label}
       // Exposes the state to assistive tech and to the tests, which assert on
-      // this rather than on colours.
+      // this rather than on colors.
       aria-pressed={isDark}
       data-theme-toggle={isDark ? 'dark' : 'light'}
       className={cx(

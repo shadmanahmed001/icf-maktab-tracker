@@ -20,16 +20,16 @@ export function useApi(loader, deps = [], { skip = false } = {}) {
       setLoading(false);
       return undefined;
     }
-    let cancelled = false;
+    let canceled = false;
     setLoading(true);
     setError(null);
 
     loaderRef.current()
-      .then((result) => { if (!cancelled) setData(result); })
-      .catch((err) => { if (!cancelled) setError(err); })
-      .finally(() => { if (!cancelled) setLoading(false); });
+      .then((result) => { if (!canceled) setData(result); })
+      .catch((err) => { if (!canceled) setError(err); })
+      .finally(() => { if (!canceled) setLoading(false); });
 
-    return () => { cancelled = true; };
+    return () => { canceled = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [...deps, tick, skip]);
 

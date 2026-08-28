@@ -18,11 +18,11 @@ export function AuthProvider({ children }) {
 
   // Restore on mount. A failure here means signed out, not an app-level error.
   useEffect(() => {
-    let cancelled = false;
+    let canceled = false;
     api.session()
-      .then((data) => { if (!cancelled) applySession(data); })
-      .catch(() => { if (!cancelled) applySession(null); });
-    return () => { cancelled = true; };
+      .then((data) => { if (!canceled) applySession(data); })
+      .catch(() => { if (!canceled) applySession(null); });
+    return () => { canceled = true; };
   }, [applySession]);
 
   const signIn = useCallback(async (identifier, secret) => {
